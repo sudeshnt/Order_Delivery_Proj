@@ -15,7 +15,7 @@
             </ul>
             <div class="tab-content">
               <div class="tab-pane active" id="tab_1">
-              
+
               </div>
               <!-- /.tab-pane -->
               <div class="tab-pane" id="tab_2">

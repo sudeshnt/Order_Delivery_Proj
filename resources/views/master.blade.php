@@ -28,6 +28,11 @@
         <!-- include a theme -->
         <link rel="stylesheet" href="{{asset("/node_modules/alertifyjs/build/css/themes/default.min.css")}}" />
 
+        <link rel="stylesheet" href="{{ asset("/node_modules/admin-lte/plugins/datatables/dataTables.bootstrap.css")}}">
+
+
+
+
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
         <!--[if lt IE 9]>
@@ -35,12 +40,40 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
         <![endif]-->
 
+
+
+        {{--JQuery--}}
+        <script src="{{ asset("/node_modules/admin-lte/plugins/jQuery/jQuery-2.2.0.min.js")}}"></script>
+
+        <!-- Select2 -->
+        <link rel="stylesheet" href="{{ asset("/node_modules/admin-lte/plugins/select2/select2.min.css")}}">
+        <!-- Select2 -->
+        <script src="{{ asset("/node_modules/admin-lte/plugins/select2/select2.full.min.js")}}"></script>
+        <!-- InputMask -->
+        <script src="{{ asset("/node_modules/admin-lte/plugins/input-mask/jquery.inputmask.js")}}"></script>
+        <script src="{{ asset("/node_modules/admin-lte/plugins/input-mask/jquery.inputmask.date.extensions.js")}}"></script>
+        <script src="{{ asset("/node_modules/admin-lte/plugins/input-mask/jquery.inputmask.extensions.js")}}"></script>
+
+
+        <!-- bootstrap datepicker -->
+        <script src="{{ asset("/node_modules/admin-lte/plugins/datepicker/bootstrap-datepicker.js")}}"></script>
+        <link rel="stylesheet" href="{{ asset("/node_modules/admin-lte/plugins/datepicker/datepicker3.css")}}">
+
         <!-- styles -->
         <style type="text/css">
             .row {
                 margin: 2%;
                }
+            .select2 {
+                color: #444;
+                /* line-height: 28px; */
+            }
+            .select2-container--default .select2-selection--multiple .select2-selection__choice {
+                background-color: #3c8dbc;
+                border-color: #367fa9;
+            }
         </style>
+
     </head>
     <body class="skin-blue">
     <div class="wrapper">
@@ -230,6 +263,8 @@
                     <!-- Optionally, you can add icons to the links -->
                     <li class="active"><a href="{{url('dashboard')}}"><span>Dashboard</span></a></li>
                     <li><a href="{{url('customers')}}"><span>Customers</span></a></li>
+                    <li><a href="{{url('vehicles')}}"><span>Vehilcles</span></a></li>
+                    <li><a href="{{url('drivers')}}"><span>Drivers</span></a></li>
                     <li class="treeview">
                         <a ><span>Sales</span> <i class="fa fa-angle-left pull-right"></i></a>
                         <ul class="treeview-menu">
@@ -240,6 +275,7 @@
                         </ul>
                     </li>
                     <li><a href="{{url('products')}}"><span>Products</span></a></li>
+                    <li><a href="{{url('companies')}}"><span>Companies</span></a></li>
                     <li class="treeview">
                         <a><span>Zones</span> <i class="fa fa-angle-left pull-right"></i></a>
                         <ul class="treeview-menu">
@@ -279,17 +315,31 @@
     
      <!-- alertify js -->
     <!-- include the script -->
-    
+
+{{--
     <script src="https://code.jquery.com/jquery-2.1.3.min.js" integrity="sha256-ivk71nXhz9nsyFDoYoGf2sbjrR9ddh+XDkCcfZxjvcM=" crossorigin="anonymous"></script>
+--}}
+
+
     <script src="{{asset("/node_modules/alertifyjs/build/alertify.js")}}"></script>
     <script src="{{asset("/node_modules/alertifyjs/build/alertify.min.js")}}"></script>
     <!-- Bootstrap 3.3.2 JS -->
     <script src="{{ asset ("/node_modules/admin-lte/bootstrap/js/bootstrap.min.js") }}" type="text/javascript"></script>
     <!-- AdminLTE App -->
     <script src="{{ asset ("/node_modules/admin-lte/dist/js/app.min.js") }}" type="text/javascript"></script>
-    
+
+    {{--datatable--}}
+    <script src="{{ asset("/node_modules/admin-lte/plugins/datatables/jquery.dataTables.min.js")}}"></script>
+    <script src="{{ asset("/node_modules/admin-lte/plugins/datatables/dataTables.bootstrap.min.js")}}"></script>
+
+
+
     <!-- Optionally, you can add Slimscroll and FastClick plugins.
           Both of these plugins are recommended to enhance the
           user experience -->
+    <script type="text/javascript">
+        $('.select2').select2();
+    </script>
+
     </body>
 </html>

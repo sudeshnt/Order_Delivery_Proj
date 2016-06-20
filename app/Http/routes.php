@@ -18,6 +18,14 @@ Route::get('/dashboard', 'ViewController@dashboard');
     
 Route::get('/customers', 'ViewController@customers');
 
+Route::get('/vehicles', 'ViewController@vehicles');
+
+Route::get('/drivers', 'ViewController@drivers');
+
+Route::get('/companies', 'ViewController@companies');
+
+Route::get('/products', 'ViewController@products');
+
 Route::get('/addOrder', 'ViewController@addOrder');
 
 Route::get('/customerZones', 'ViewController@customerZones');
@@ -33,6 +41,9 @@ Route::get('/login', function () {
 Route::get('/{any}', function () {
 	 return Redirect::to('/login');
 });
+
+/*get product in order*/
+Route::get('/getProduct/{product_id}', 'ProductController@getProduct');
 
 /*post requests*/
 /*adding customer zone*/
@@ -52,3 +63,17 @@ Route::get('/doLogout','UserController@doLogout');
 
 /*add a customer*/
 Route::post('/addCustomer','CustomerController@addCustomer');
+
+/*add a driver*/
+Route::post('/addDriver','DriverController@addDriver');
+
+/*add a vehicle*/
+Route::post('/addVehicle','VehicleController@addVehicle');
+
+/*add a company*/
+Route::post('/addCompany','CompanyController@addCompany');
+
+/*add a company*/
+Route::post('/addProduct','ProductController@addProduct');
+
+

@@ -1,6 +1,13 @@
 @extends('master')
 
 @section('content')
+
+	<style type="text/css">
+		.row {
+			margin: 0%;
+		}
+	</style>
+
 	<!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>
@@ -17,7 +24,33 @@
             </ul>
             <div class="tab-content">
               <div class="tab-pane active" id="tab_1">
-              
+					{{--customer table--}}
+				  <table id="customer_table"  class="table table-bordered table-hover allTables">
+					  <thead>
+					  <tr>
+						  <th>Name</th>
+						  <th>Business Name</th>
+						  <th>Address</th>
+						  <th>Customer Zone</th>
+						  <th>Zip</th>
+						  <th>Mobile</th>
+					  </tr>
+					  </thead>
+
+
+					  <tbody>
+					  @foreach ($allCustomers as $customer)
+						  <tr>
+							  <td>{{$customer->customer_name}}</td>
+							  <td>{{$customer->business_name}}</td>
+							  <td>{{$customer->customer_address}}</td>
+							  <td>{{$customer->zone_name}}</td>
+							  <td>{{$customer->zip}}</td>
+							  <td>{{$customer->customer_mobile}}</td>
+						  </tr>
+					  @endforeach
+					  </tbody>
+				  </table>
               </div>
               <!-- /.tab-pane -->
               <div class="tab-pane" id="tab_2">
@@ -64,5 +97,18 @@
 	            </div>
             <!-- /.tab-content -->
           </div>
-       </div>   
+       </div>
+
+<script>
+	$(function () {
+		$('#customer_table').DataTable({
+			"paging": true,
+			"lengthChange": false,
+			"searching": true,
+			"ordering": false,
+			"info": true,
+			"autoWidth": false
+		});
+	});
+</script>
 @endsection          
