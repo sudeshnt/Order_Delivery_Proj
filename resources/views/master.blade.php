@@ -59,6 +59,12 @@
         <script src="{{ asset("/node_modules/admin-lte/plugins/datepicker/bootstrap-datepicker.js")}}"></script>
         <link rel="stylesheet" href="{{ asset("/node_modules/admin-lte/plugins/datepicker/datepicker3.css")}}">
 
+        <!-- ... -->
+        {{--<script type="text/javascript" src="{{ asset("/bower_components/jquery/jquery.min.js")}}"></script>--}}
+        <script type="text/javascript" src="{{ asset("/bower_components/moment/min/moment.min.js")}}"></script>
+        <script type="text/javascript" src="{{ asset("/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js")}}"></script>
+        <link rel="stylesheet" href="{{ asset("/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css")}}" />
+
         <!-- styles -->
         <style type="text/css">
             .row {
@@ -269,6 +275,7 @@
                         <a ><span>Sales</span> <i class="fa fa-angle-left pull-right"></i></a>
                         <ul class="treeview-menu">
                             <li><a href="{{url('addOrder')}}">Add Order</a></li>
+                            <li><a href="{{url('allOrders')}}">All Order</a></li>
                             <li><a href="{{url('deliverdOrders')}}">Delivered Orders</a></li>
                             <li><a href="{{url('notDeliveredOrders')}}">Orders Not Delivered</a></li>
                             <li><a href="{{url('returnedProducts')}}">Returned Products</a></li>

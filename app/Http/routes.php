@@ -38,12 +38,32 @@ Route::get('/login', function () {
     return view('login',['message' => '']);
 });
 
+/*place an order*/
+Route::get('/placeOrder', 'OrderController@placeOrder');
+
+/*place an order*/
+Route::get('/test', 'OrderController@test');
+
+/*get product in order*/
+Route::get('/getProduct/{product_id}', 'ProductController@getProduct');
+
+/*get order details*/
+Route::get('/getOrderDetails/{order_code}', 'OrderController@getOrderDetails');
+
+/*authenticates an user*/
+Route::get('/doLogout','UserController@doLogout');
+
+/*generating invoice for order id*/
+Route::get('/invoice/{order_code}','OrderController@generateInvoice');
+
+/*view all orders*/
+Route::get('/allOrders','OrderController@getAllOrders');
+
 Route::get('/{any}', function () {
 	 return Redirect::to('/login');
 });
 
-/*get product in order*/
-Route::get('/getProduct/{product_id}', 'ProductController@getProduct');
+
 
 /*post requests*/
 /*adding customer zone*/
@@ -57,9 +77,6 @@ Route::post('/doRegister','UserController@doRegister');
 
 /*authenticates an user*/
 Route::post('/doLogin','UserController@doLogin');
-
-/*authenticates an user*/
-Route::get('/doLogout','UserController@doLogout');
 
 /*add a customer*/
 Route::post('/addCustomer','CustomerController@addCustomer');
@@ -75,5 +92,7 @@ Route::post('/addCompany','CompanyController@addCompany');
 
 /*add a company*/
 Route::post('/addProduct','ProductController@addProduct');
+
+
 
 
