@@ -26,7 +26,7 @@ class CustomerController extends Controller
     		$customer->customer_name=Input::get('name');
     		$customer->business_name=Input::get('bizz_name');
     		$customer->customer_address=Input::get('address');
-    		$customer->zip=Input::get('zip');
+    		/*$customer->zip=Input::get('zip');*/
     		$customer->customer_mobile=Input::get('mobile_no');
     		$customer->zone_id=Input::get('zone_id');
     		$customer->save();

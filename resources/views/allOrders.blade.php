@@ -28,18 +28,19 @@
             <thead>
             <tr>
                 <th>Date</th>
-                <th>Order Code</th>
+                <th style="width: 36px;">Order Code</th>
                 <th>Customer</th>
                 <th>Total</th>
                 <th>Paid</th>
                 <th>Balance</th>
-                <th>Payment Status</th>
+                <th style="width: 56px;">Payment Status</th>
+                <th style="width: 52px;">Delivery Status</th>
                 <th>Actions</th>
             </tr>
             </thead>
             <tbody>
             @foreach ($allOrders as $order)
-                <a><tr onclick="getOrderDetails('{{$order->order_code}}')">
+               <tr{{-- onclick="getOrderDetails('{{$order->order_code}}')"--}}>
                     <td>{{$order->created_at}}</td>
                     <td>{{$order->order_code}}</td>
                     <td>{{$order->customer_name}}</td>
@@ -47,18 +48,39 @@
                     <td>{{$order->paid_amount}}</td>
                     <td>{{$order->full_amount-$order->paid_amount}}</td>
                     @if($order->isPaid)
-                        <td>Paid</td>
+                        <td><span class="label label-success" style="font-size: small">Paid</span></td>
                     @else
-                        <td>Pending</td>
+                        <td><span class="label label-danger" style="font-size: small">Pending</span></td>
                     @endif
-                    <td></td>
-                </tr></a>
+                   @if($order->isDelivered)
+                       <td><span class="label label-success" style="font-size: small">Delivered</span></td>
+                   @else
+                       <td><span class="label label-danger" style="font-size: small">Pending</span></td>
+                   @endif
+                    <td>
+                        <select class="form-control" name="option" style="width: 100%;" onchange="ActionSelected(this.value,'{{$order->order_code}}');">
+                                <option selected>Select Action</option>
+                                @if($order->isDelivered==0)
+                                <option value="delivery">Add Delivery</option>
+                                @else
+                                <option value="delivery" disabled>Add Delivery</option>
+                                @endif
+                                @if($order->isPaid==0)
+                                    <option value="payment">Add Payment</option>
+                                @else
+                                    <option value="payment" disabled>Add Payment</option>
+                                @endif
+                                <option value="view_payments">View Payments</option>
+                        </select>
+                    </td>
+
+               </tr>
             @endforeach
             </tbody>
         </table>
     </div>
 
-    {{--Modal--}}
+    {{--View Modal--}}
     <div class="modal fade" tabindex="-1" role="dialog" id="myModal">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -199,8 +221,180 @@
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 
+    {{--Delivery Modal--}}
+    <div class="modal fade" tabindex="-1" role="dialog" id="deliveryModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Add Delivery</h4>
+                </div>
+                <div class="modal-body">
+                    <form role="form" method="post" action="{{ url('/addDelivery') }}">
+                    <div class="box-body">
+
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                            <div class="row">
+                                <div class='col-sm-6'>
+                                    <div class="form-group">
+                                        <label for="delivery_date">Delivery Date</label>
+                                        <div class='input-group date'>
+                                            <input type='text' class="form-control"  name='delivery_date' id='delivery_date'/>
+                                                    <span class="input-group-addon">
+                                                        <span class="glyphicon glyphicon-calendar"></span>
+                                                    </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class='col-sm-2'></div>
+                                <div class='col-sm-4'>
+                                    <div class="form-group">
+                                        <label for="order_code">Order ID</label>
+                                        <div class='input-group'>
+                                            <input type='text' class="form-control"  name='order_code' id='order_code' readonly/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    <div class="form-group">
+                                        <label for="customer">Customer</label>
+                                        <div class='input-group' style="width: 100%;">
+                                            <input type='text' class="form-control"  name='customer' id='customer' readonly/>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    <div class="form-group">
+                                        <label for="delivery_address">Delivery Address</label>
+                                        <div class='input-group' style="width: 100%;">
+                                            <input type='text' style="height: 100px;" class="form-control"  name='delivery_address' id='delivery_address' readonly/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                    </div>
+                    <div class="box-footer">
+                            <button type="submit" class="btn btn-primary" style="float: right;">Submit Delivery</button>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{--Payment Modal--}}
+    <div class="modal fade" tabindex="-1" role="dialog" id="paymentModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Add Payment</h4>
+                </div>
+                <div class="modal-body">
+                    <form role="form" method="post" action="{{ url('/addPayment') }}">
+                    <div class="box-body">
+                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                            <div class="row">
+                                <div class='col-sm-6'>
+                                    <div class="form-group">
+                                        <label for="payment_date">Payment Date</label>
+                                        <div class='input-group date'>
+                                            <input type='text' class="form-control"  name='payment_date' id='payment_date'/>
+                                                    <span class="input-group-addon">
+                                                        <span class="glyphicon glyphicon-calendar"></span>
+                                                    </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class='col-sm-2'></div>
+                                <div class='col-sm-4'>
+                                    <div class="form-group">
+                                        <label for="order_code">Order ID</label>
+                                        <div class='input-group'>
+                                            <input type='text' class="form-control"  name='order_code' id='payment_order_code' readonly/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="row">
+                                    <label>Balance</label>
+                                    <div class='input-group' style="width: 63%;" >
+                                        <input type="text" class="form-control" name="balance" id="balance" readonly/>
+                                            <span class="input-group-addon">
+                                                    <span class="glyphicon glyphicon-usd"></span>
+                                            </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="row">
+                                    <label>Amount</label>
+                                    <div class='input-group' style="width: 60%;" >
+                                        <input type="text" class="form-control" name="amount" id="amount" required/>
+                                        <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-usd"></span>
+                                        </span>
+                                        <span>
+                                            <select class="form-control" name="ispaid" id="ispaid" style="width: 110%;">
+                                                <option selected>Select Payment Option</option>
+                                                <option value=true>Full Payment</option>
+                                                <option value=false>Partial Payment</option>
+                                            </select>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                    </div>
+                    <div class="box-footer">
+                        <button type="submit" class="btn btn-primary" style="float: right;">Submit Payment</button>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{--View Payments Modal--}}
+    <div class="modal fade" tabindex="-1" role="dialog" id="viewPaymentsModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Payments</h4>
+                </div>
+                <div class="modal-body">
+                        <div class="box-body">
+                            <div class="well" id="order_details"></div>
+                            <div class="row" id="payments_table_div">
+
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <script>
+        $('#delivery_date').datetimepicker({
+            defaultDate: new Date(),
+            format: 'YYYY-MM-DD HH:mm:ss'
+        });
+
+        $('#payment_date').datetimepicker({
+            defaultDate: new Date(),
+            format: 'YYYY-MM-DD HH:mm:ss'
+        });
+
         $(function () {
             $('#orders_table').DataTable({
                 "paging": true,
@@ -221,13 +415,66 @@
                 async:true,
                 success: function(data){
                     console.log(data);
-
                 },
                 error: function(data)
                 {
                     console.log("error");
                 }
             });
+        }
+
+        function ActionSelected(selected,order_code){
+            $.ajax({
+                url: "{{ url('/getOrderDetails') }}"+"/"+order_code,
+                type: "get",
+                dataType: 'json',
+                async:true,
+                success: function(data){
+                    console.log(data);
+                    if(selected=='delivery'){
+                        $('#deliveryModal').modal('show');
+                        $('#order_code').val(data.order_code);
+                        $('#customer').val(data.customer_name);
+                        $('#delivery_address').val(data.customer_address);
+                    }
+                    if(selected=='payment'){
+                        $('#paymentModal').modal('show');
+                        $('#payment_order_code').val(data.order_code);
+                        $('#balance').val(data.full_amount-data.paid_amount);
+                    }
+                    if(selected=='view_payments'){
+                        $.ajax({
+                            url: "{{ url('/getOrderPayments') }}"+"/"+order_code,
+                            type: "get",
+                            dataType: 'json',
+                            async:true,
+                            success: function(data){
+
+                                $('#viewPaymentsModal').modal('show');
+                                var table_content = '<table id="payments_table"  class="table table-bordered table-hover allTables"><thead><tr><th>Payment Reference</th><th>Payment Date</th><th>Amount</th></tr></thead><tbody>';
+                                var total_paid = 0;
+                                for(payments of data){
+                                    console.log(payments);
+                                    table_content+='<tr><td>'+String("000000" + payments.payment_id).slice(-6)+'</td><td>'+payments.payment_date+'</td><td>'+payments.amount+'</td></tr>';
+                                    total_paid+=payments.amount;
+                                }
+                                table_content+='<tr><td></td><td>Total Paid</td><td>'+total_paid+' $</td></tr>'
+                                table_content+='</tbody></table>';
+                                document.getElementById("payments_table_div").innerHTML =table_content;
+                            },
+                            error: function(data)
+                            {
+                                console.log("error");
+                            }
+                        });
+                    }
+                },
+                error: function(data)
+                {
+                    console.log("error");
+                }
+            });
+
         }
     </script>
 @endsection

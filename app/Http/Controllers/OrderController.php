@@ -4,13 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Customer;
 use App\Order;
+use App\Payment;
 use App\Product;
 use App\ProductsOnOrders;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
+
+use Session;
+use Illuminate\Support\Facades\Redirect;
 
 class OrderController extends Controller
 {
@@ -20,8 +25,9 @@ class OrderController extends Controller
         $order_date = $_GET['order_date'];
         $order_code = $_GET['order_code'];
         $full_amount = $_GET['full_amount'];
-        $paid_amount = $_GET['paid_amount'];
-        $isPaid = $_GET['isPaid'];
+        //$paid_amount = $_GET['paid_amount'];
+        $vehicle_id = $_GET['vehicle_id'];
+        /*$isPaid = $_GET['isPaid'];*/
         $customer = Customer::where('customer_id',$_GET['customer_id'])->first();
         // handling products in orders
         foreach ($_GET['products_on_order'] as $product_on_order) {
@@ -43,11 +49,9 @@ class OrderController extends Controller
         /*$order->created_at = $order_date;*/
         $order->customer_id=$customer->customer_id;
         $order->full_amount=$full_amount;
-        $order->paid_amount=$paid_amount;
-        if($isPaid=='true')
-            $order->isPaid=true;
-        else
-            $order->isPaid=false;
+        $order->paid_amount=0;
+        $order->isPaid=false;
+        $order->vehicle_id=$vehicle_id;
         $order->isDelivered=false;
         $order->save();
 
@@ -86,6 +90,60 @@ class OrderController extends Controller
             ->first();
         print_r(json_encode($order));
     }
+
+    /*submit delivery*/
+    public function addDelivery(){
+        if(Session::get('loggin_status')==true){
+            DB::table('orders')
+                ->where('order_code',  Input::get('order_code'))
+                ->update(['delivered_at' => Input::get('delivery_date'),'isDelivered'=>1]);
+            return Redirect::to('/allOrders');
+        }else{
+            return Redirect::to('/login');
+        }
+    }
+
+    /*submit payment*/
+    public function addPayment(){
+        if(Session::get('loggin_status')==true){
+           //dd(Input::all());
+            $payment = new Payment();
+            $payment->order_code = Input::get('order_code');
+            $payment->amount = Input::get('amount');
+            $payment->payment_date = Input::get('payment_date');
+            $payment->save();
+
+            $order=Order::where('order_code',Input::get('order_code'))->first();
+            if(Input::get('ispaid')=='true'){
+                DB::table('orders')
+                    ->where('order_code',  Input::get('order_code'))
+                    ->update(['paid_amount' =>  $order->paid_amount+Input::get('amount'),'isPaid'=>1]);
+            }
+            else{
+                DB::table('orders')
+                    ->where('order_code',  Input::get('order_code'))
+                    ->update(['paid_amount' =>  $order->paid_amount+Input::get('amount')]);
+            }
+
+            return Redirect::to('/allOrders');
+        }else{
+            return Redirect::to('/login');
+        }
+    }
+
+    /*get payments to a given order*/
+    public function getOrderPayments($order_code){
+        if(Session::get('loggin_status')==true){
+            $payments = Payment::where('order_code',$order_code)-> orderBy('payment_date', 'asc')->get();
+            print_r(json_encode($payments));
+        }else{
+            return Redirect::to('/login');
+        }
+    }
+
+
+
+
 
 
 }

@@ -49,9 +49,10 @@
 
             </div>
             <div class="row col-md-9" style="margin-top:-1%;">
-                <div class="input-group row">
+
+                <div class="input-group row" style="width: 68%;">
                     <label >Customer</label>
-                    <select class="form-control select2" name="customer_id" id='customer_id' style="width: 100%;">
+                    <select class="form-control select2" name="customer_id" id='customer_id' style="width: 100%;" onchange="customerSelected(this.value);">
                         <option selected>Choose a Customer</option>
                         @foreach ($allCustomers as $customer)
                             <option value="{{$customer->customer_id}}">{{$customer->customer_name}}</option>
@@ -67,7 +68,16 @@
                 <div class="row" id="products_table_div">
 
                 </div>
-                <div class="row">
+                <div class="form-group row " style="width: 68%;">
+                    <label for="vehicle">Assign Delivery Vehicle</label>
+                    <select class="form-control select2" name="vehicle" id="vehicles" style="width: 100%;">
+                        <option selected>Select Vehicle</option>
+                        {{--@foreach ($allProducts as $product)
+                            <option value="{{$product->product_id}}">{{$product->product_name}}</option>
+                        @endforeach--}}
+                    </select>
+                </div>
+                {{--<div class="row">
                     <label>Paid Amount</label>
                     <div class='input-group col-md-5'>
                         <input type="text" class="form-control" name="paid_amount" id="paid_amount"  required />
@@ -82,7 +92,7 @@
                             </select>
                         </span>
                     </div>
-                </div>
+                </div>--}}
                 <div class="box-footer">
                     <button class="btn btn-primary" onclick="placeOrder();"> Place Order</button>
                 </div>
@@ -201,11 +211,11 @@
     });
 
     //when changing to full payment automatically set paid amount to full amount
-    $( "#ispaid" ).change(function() {
+    /*$( "#ispaid" ).change(function() {
         if($( "#ispaid").val()=='true'){
             document.getElementById("paid_amount").value = total_amount;
         }
-    });
+    });*/
 
 
 
@@ -271,13 +281,40 @@
                   order_date:document.getElementById("order_date").value,
                   order_code:document.getElementById("order_id").value,
                   customer_id:document.getElementById("customer_id").value,
-                  paid_amount:document.getElementById("paid_amount").value,
-                  isPaid:document.getElementById("ispaid").value,
-                  full_amount:total_amount },
+                  /*paid_amount:document.getElementById("paid_amount").value,*/
+                  vehicle_id:document.getElementById("vehicles").value,
+                  full_amount:total_amount},
             dataType: 'json',
             async:true,
             success: function(data){
                 window.location="{{URL::to('/invoice')}}/"+data;
+            },
+            error: function(data)
+            {
+                console.log("error");
+            }
+        });
+    }
+
+    //when customer is changed available behicles for that customer zone
+    //will be selected and loaded to the vehicle select drop down
+    function customerSelected(customer_id){
+        $.ajax({
+            url: "{{ url('/getCustomerZoneVehicles') }}"+"/"+customer_id,
+            type: "get",
+            dataType: 'json',
+            async:true,
+            success: function(data){
+                var select = document.getElementById("vehicles");
+                select.innerHTML = '<option selected></option>';
+                for(vehicle of data)
+                {
+                    console.log(vehicle);
+                    var opt = document.createElement("option");
+                    opt.value = vehicle.vehicle_id;
+                    opt.textContent = vehicle.vehicle_number+' : '+vehicle.driver_name ;
+                    select.appendChild(opt);
+                }
             },
             error: function(data)
             {

@@ -265,32 +265,102 @@
 
                 <!-- Sidebar Menu -->
                 <ul class="sidebar-menu">
+
                     <!-- <li class="header">HEADER</li> -->
                     <!-- Optionally, you can add icons to the links -->
-                    <li class="active"><a href="{{url('dashboard')}}"><span>Dashboard</span></a></li>
-                    <li><a href="{{url('customers')}}"><span>Customers</span></a></li>
-                    <li><a href="{{url('vehicles')}}"><span>Vehilcles</span></a></li>
-                    <li><a href="{{url('drivers')}}"><span>Drivers</span></a></li>
-                    <li class="treeview">
+                    @if(Request::path()==='dashboard')
+                        <li class="active"><a href="{{url('dashboard')}}"><span>Dashboard</span></a></li>
+                    @else
+                        <li ><a href="{{url('dashboard')}}"><span>Dashboard</span></a></li>
+                    @endif
+
+                    @if(Request::path()==='customers')
+                        <li class="active"><a href="{{url('customers')}}"><span>Customers</span></a></li>
+                    @else
+                        <li><a href="{{url('customers')}}"><span>Customers</span></a></li>
+                    @endif
+
+                    @if(Request::path()==='vehicles')
+                        <li class="active"><a href="{{url('vehicles')}}"><span>Vehilcles</span></a></li>
+                    @else
+                        <li><a href="{{url('vehicles')}}"><span>Vehilcles</span></a></li>
+                    @endif
+                    @if(Request::path()==='drivers')
+                        <li  class="active"><a href="{{url('drivers')}}"><span>Drivers</span></a></li>
+                    @else
+                        <li><a href="{{url('drivers')}}"><span>Drivers</span></a></li>
+                    @endif
+
+                    @if(Request::path()=='addOrder' || Request::path()=='allOrders' || Request::path()=='deliverdOrders' || Request::path()=='notDeliveredOrders' || Request::path()=='returnedProducts')
+                        <li class="treeview active">
+                    @else
+                        <li class="treeview">
+                    @endif
                         <a ><span>Sales</span> <i class="fa fa-angle-left pull-right"></i></a>
                         <ul class="treeview-menu">
-                            <li><a href="{{url('addOrder')}}">Add Order</a></li>
-                            <li><a href="{{url('allOrders')}}">All Order</a></li>
-                            <li><a href="{{url('deliverdOrders')}}">Delivered Orders</a></li>
-                            <li><a href="{{url('notDeliveredOrders')}}">Orders Not Delivered</a></li>
-                            <li><a href="{{url('returnedProducts')}}">Returned Products</a></li>
+                            @if(Request::path()==='addOrder')
+                                <li class="active"><a href="{{url('addOrder')}}">Add Order</a></li>
+                            @else
+                                <li><a href="{{url('addOrder')}}">Add Order</a></li>
+                            @endif
+                            @if(Request::path()==='allOrders')
+                                <li class="active"><a href="{{url('allOrders')}}">All Order</a></li>
+                            @else
+                                <li><a href="{{url('allOrders')}}">All Order</a></li>
+                            @endif
+                            @if(Request::path()==='deliverdOrders')
+                                <li class="active"><a href="{{url('deliverdOrders')}}">Delivered Orders</a></li>
+                            @else
+                                <li><a href="{{url('deliverdOrders')}}">Delivered Orders</a></li>
+                            @endif
+                            @if(Request::path()==='notDeliveredOrders')
+                                <li class="active"><a href="{{url('notDeliveredOrders')}}">Orders Not Delivered</a></li>
+                            @else
+                                <li><a href="{{url('notDeliveredOrders')}}">Orders Not Delivered</a></li>
+                            @endif
+                            @if(Request::path()==='returnedProducts')
+                                <li class="active"><a href="{{url('returnedProducts')}}">Returned Products</a></li>
+                            @else
+                                <li><a href="{{url('returnedProducts')}}">Returned Products</a></li>
+                            @endif
                         </ul>
                     </li>
-                    <li><a href="{{url('products')}}"><span>Products</span></a></li>
-                    <li><a href="{{url('companies')}}"><span>Companies</span></a></li>
-                    <li class="treeview">
+                    @if(Request::path()==='products')
+                        <li class="active"><a href="{{url('products')}}"><span>Products</span></a></li>
+                    @else
+                        <li><a href="{{url('products')}}"><span>Products</span></a></li>
+                    @endif
+                    @if(Request::path()==='companies')
+                        <li class="active"><a href="{{url('companies')}}"><span>Companies</span></a></li>
+                    @else
+                        <li><a href="{{url('companies')}}"><span>Companies</span></a></li>
+                    @endif
+
+                    @if(Request::path()=='customerZones' || Request::path()=='vehicleZones')
+                        <li class="treeview active">
+                    @else
+                        <li class="treeview">
+                    @endif
                         <a><span>Zones</span> <i class="fa fa-angle-left pull-right"></i></a>
                         <ul class="treeview-menu">
-                            <li><a href="{{url('customerZones')}}">Customer Zones</a></li>
-                            <li><a href="{{url('vehicleZones')}}">Vehicle Zones</a></li>
+                            @if(Request::path()==='customerZones')
+                                <li class="active"><a href="{{url('customerZones')}}">Customer Zones</a></li>
+                            @else
+                                <li><a href="{{url('customerZones')}}">Customer Zones</a></li>
+                            @endif
+                            @if(Request::path()==='vehicleZones')
+                                <li class="active"><a href="{{url('vehicleZones')}}">Vehicle Zones</a></li>
+                            @else
+                                <li><a href="{{url('vehicleZones')}}">Vehicle Zones</a></li>
+                            @endif
                         </ul>
                     </li>
-                    <li><a href="{{url('register')}}"><span>Register Users</span></a></li>
+                    @if(Request::path()==='register')
+                        <li class="active"><a href="{{url('register')}}"><span>Register Users</span></a></li>
+                    @else
+                        <li><a href="{{url('register')}}"><span>Register Users</span></a></li>
+                    @endif
+
                 </ul><!-- /.sidebar-menu -->
             </section>
             <!-- /.sidebar -->

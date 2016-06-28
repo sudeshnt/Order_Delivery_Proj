@@ -59,6 +59,12 @@ Route::get('/invoice/{order_code}','OrderController@generateInvoice');
 /*view all orders*/
 Route::get('/allOrders','OrderController@getAllOrders');
 
+/*submit payment*/
+Route::get('/getCustomerZoneVehicles/{customer_id}','VehicleController@getCustomerZoneVehicles');
+
+/*get payments for a order*/
+Route::get('/getOrderPayments/{order_code}','OrderController@getOrderPayments');
+
 Route::get('/{any}', function () {
 	 return Redirect::to('/login');
 });
@@ -92,6 +98,13 @@ Route::post('/addCompany','CompanyController@addCompany');
 
 /*add a company*/
 Route::post('/addProduct','ProductController@addProduct');
+
+/*submit delivery*/
+Route::post('/addDelivery','OrderController@addDelivery');
+
+/*submit payment*/
+Route::post('/addPayment','OrderController@addPayment');
+
 
 
 

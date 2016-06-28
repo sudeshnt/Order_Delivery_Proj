@@ -32,7 +32,7 @@
 						  <th>Business Name</th>
 						  <th>Address</th>
 						  <th>Customer Zone</th>
-						  <th>Zip</th>
+						  {{--<th>Zip</th>--}}
 						  <th>Mobile</th>
 					  </tr>
 					  </thead>
@@ -45,7 +45,7 @@
 							  <td>{{$customer->business_name}}</td>
 							  <td>{{$customer->customer_address}}</td>
 							  <td>{{$customer->zone_name}}</td>
-							  <td>{{$customer->zip}}</td>
+							  {{--<td>{{$customer->zip}}</td>--}}
 							  <td>{{$customer->customer_mobile}}</td>
 						  </tr>
 					  @endforeach
@@ -69,10 +69,10 @@
 		                  <label for="address">Adress</label>
 		                  <input type="text" class="form-control" name="address" id="address" placeholder="Enter Address" required>
 		                </div>
-		                <div class="form-group">
+		                {{--<div class="form-group">
 		                  <label for="zip">Zip Code</label>
 		                  <input type="text" pattern="[0-9]*" class="form-control" name="zip" id="zip" placeholder="Enter Zip Code" required>
-		                </div>
+		                </div>--}}
 		                <div class="form-group">
 			                <label>Customer Zone</label>
 			                <select class="form-control select2" name="zone_id" style="width: 100%;">

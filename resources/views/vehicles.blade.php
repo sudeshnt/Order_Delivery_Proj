@@ -43,6 +43,7 @@
                     @endforeach
                     </tbody>
                 </table>
+                <div class="row"><button class="btn btn-danger" style="font-size: x-large; margin: 1%;">Reset All</button></div>
             </div>
             <!-- /.tab-pane -->
             <div class="tab-pane" id="tab_2">

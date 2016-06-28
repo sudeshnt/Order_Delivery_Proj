@@ -140,6 +140,30 @@ class ViewController extends Controller
 	public function vehicleZones(){
 		if(Session::get('loggin_status')=='true'){
 			$view = View::make('vehicleZones');
+			$view->vehicle_zones = DB::table('vehicles')
+				->join('zones', 'vehicles.zone_id', '=', 'zones.zone_id')
+				->join('drivers', 'vehicles.driver_id', '=', 'drivers.driver_id')
+				->select('vehicles.*', 'zones.zone_name','drivers.driver_name')
+				->get();
+			/*$view->vehicle_zones = DB::table('vehicles')
+				->join('zones as vehicle_zone_table', 'vehicles.zone_id', '=', 'vehicle_zone_table.zone_id')
+				->join('zones as customer_zone_table', 'vehicles.customer_zone_id', '=', 'customer_zone_table.zone_id')
+				->join('drivers', 'vehicles.driver_id', '=', 'drivers.driver_id')
+				->select('vehicles.*', 'vehicle_zone_table.zone_name','customer_zone_table.zone_name as customer_zone_name','drivers.driver_name')
+				->get();*/
+			//dd($view->vehicle_zones);
+			$vehicles = array();
+			foreach ($view->vehicle_zones as $vehicle)
+			{
+				$vehicles[$vehicle->zone_name] = array();
+			}
+			foreach ($view->vehicle_zones as $vehicle)
+			{
+				array_push($vehicles[$vehicle->zone_name],$vehicle);
+			}
+			//dd($customers);
+			$view->vehicles_in_each_zone = $vehicles;
+			$view->index=0;
 			return $view;
 		}else{
 			return Redirect::to('/login');
