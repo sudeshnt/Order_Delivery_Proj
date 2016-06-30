@@ -45,4 +45,13 @@ class ProductController extends Controller
             ->first();
         print_r(json_encode($product));
     }
+
+    //add Stock for Existing Product
+    public function addStockExistingProduct(){
+        $product = Product::where('product_id',Input::get('product_id'))->first();
+        DB::table('products')
+            ->where('product_id',Input::get('product_id'))
+            ->update(['available_amount' => $product->available_amount+Input::get('added_amount')]);
+        return Redirect::to('/products');
+    }
 }

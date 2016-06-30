@@ -8,7 +8,7 @@
         <div class="col-xs-12">
             <h2 class="page-header">
                 <i class="fa fa-globe"></i> AdminLTE, Inc.
-                <small class="pull-right">Date: 2/10/2014</small>
+                {{--<small class="pull-right">Date: 2/10/2014</small>--}}
             </h2>
         </div>
         <!-- /.col -->
@@ -16,13 +16,12 @@
     <!-- info row -->
     <div class="row invoice-info">
         <div class="col-sm-4 invoice-col">
-            From
+            To
             <address>
-                <strong>Admin, Inc.</strong><br>
-                795 Folsom Ave, Suite 600<br>
-                San Francisco, CA 94107<br>
-                Phone: (804) 123-5432<br>
-                Email: info@almasaeedstudio.com
+                <strong>{{$order_details->customer_name}}</strong><br>
+                <p>{{$order_details->business_name}}</p>
+                {{$order_details->customer_address}}<br>
+                {{$order_details->customer_mobile}}<br>
             </address>
         </div>
         <!-- /.col -->
@@ -31,11 +30,10 @@
         </div>
         <!-- /.col -->
         <div class="col-sm-4 invoice-col">
-            <b>Invoice #007612</b><br>
-            <br>
-            <b>Order ID:</b> 4F3S8J<br>
-            <b>Payment Due:</b> 2/22/2014<br>
-            <b>Account:</b> 968-34567
+            {{--<b>Invoice #007612</b><br>
+            <br>--}}
+            <b>Order ID:</b> {{$order_details->order_code}}<br>
+            <b>Order Date:</b> {{$order_details->created_at}}<br>
         </div>
         <!-- /.col -->
     </div>
@@ -47,42 +45,23 @@
             <table class="table table-striped">
                 <thead>
                 <tr>
-                    <th>Qty</th>
+                    <th>Product Code</th>
                     <th>Product</th>
-                    <th>Serial #</th>
-                    <th>Description</th>
+                    <th>Qty</th>
+                    <th>Unit Price</th>
                     <th>Subtotal</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>Call of Duty</td>
-                    <td>455-981-221</td>
-                    <td>El snort testosterone trophy driving gloves handsome</td>
-                    <td>$64.50</td>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>Need for Speed IV</td>
-                    <td>247-925-726</td>
-                    <td>Wes Anderson umami biodiesel</td>
-                    <td>$50.00</td>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>Monsters DVD</td>
-                    <td>735-845-642</td>
-                    <td>Terry Richardson helvetica tousled street art master</td>
-                    <td>$10.70</td>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>Grown Ups Blue Ray</td>
-                    <td>422-568-642</td>
-                    <td>Tousled lomo letterpress</td>
-                    <td>$25.99</td>
-                </tr>
+                @foreach($products_on_order as $product)
+                    <tr>
+                        <td>{{$product->product_code}}</td>
+                        <td>{{$product->product_name}}</td>
+                        <td>{{$product->qty}}</td>
+                        <td>{{$product->unit_price}}</td>
+                        <td>{{$product->qty*$product->unit_price}}</td>
+                    </tr>
+                @endforeach
                 </tbody>
             </table>
         </div>
@@ -97,11 +76,11 @@
         </div>
         <!-- /.col -->
         <div class="col-xs-6">
-            <p class="lead">Amount Due 2/22/2014</p>
+            {{--<p class="lead">Amount Due 2/22/2014</p>--}}
 
             <div class="table-responsive">
                 <table class="table">
-                    <tr>
+                    {{--<tr>
                         <th style="width:50%">Subtotal:</th>
                         <td>$250.30</td>
                     </tr>
@@ -112,10 +91,10 @@
                     <tr>
                         <th>Shipping:</th>
                         <td>$5.80</td>
-                    </tr>
+                    </tr>--}}
                     <tr>
                         <th>Total:</th>
-                        <td>$265.24</td>
+                        <td>{{$order_details->full_amount}}</td>
                     </tr>
                 </table>
             </div>

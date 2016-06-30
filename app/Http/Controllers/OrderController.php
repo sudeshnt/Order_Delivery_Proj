@@ -25,9 +25,7 @@ class OrderController extends Controller
         $order_date = $_GET['order_date'];
         $order_code = $_GET['order_code'];
         $full_amount = $_GET['full_amount'];
-        //$paid_amount = $_GET['paid_amount'];
         $vehicle_id = $_GET['vehicle_id'];
-        /*$isPaid = $_GET['isPaid'];*/
         $customer = Customer::where('customer_id',$_GET['customer_id'])->first();
         // handling products in orders
         foreach ($_GET['products_on_order'] as $product_on_order) {
@@ -45,8 +43,7 @@ class OrderController extends Controller
         }
         $order = new Order();
         $order->order_code=$order_code;
-
-        /*$order->created_at = $order_date;*/
+        $order->order_date = $order_date;
         $order->customer_id=$customer->customer_id;
         $order->full_amount=$full_amount;
         $order->paid_amount=0;
@@ -54,6 +51,11 @@ class OrderController extends Controller
         $order->vehicle_id=$vehicle_id;
         $order->isDelivered=false;
         $order->save();
+
+        //assign vehicle
+        DB::table('vehicles')
+            ->where('vehicle_id',$vehicle_id)
+            ->update(['isAssigned' => 1,'assigned_date' =>  date('Y-m-d H:i:s')]);
 
         /*return Redirect::to('/login');*/
         /*$view = View::make('invoice');
@@ -64,8 +66,20 @@ class OrderController extends Controller
     }
 
     /*generate invoice*/
-    public function generateInvoice(){
+    public function generateInvoice($order_code){
         $view = View::make('invoice');
+        $view->order_details = DB::table('orders')
+            ->join('customers', 'orders.customer_id', '=', 'customers.customer_id')
+            ->where('orders.order_code',$order_code)
+            ->select('orders.*', 'customers.*')
+            ->first();
+        //$view->products_on_order = ProductsOnOrders::where('order_code',$order_code)->get();
+        $view->products_on_order = DB::table('products_on_order')
+            ->join('products', 'products_on_order.product_id', '=', 'products.product_id')
+            ->where('products_on_order.order_code',$order_code)
+            ->select('products_on_order.*', 'products.*')
+            ->get();
+        //dd($view->order_details,$view->products_on_order);
         return $view;
 
     }
@@ -96,7 +110,7 @@ class OrderController extends Controller
         if(Session::get('loggin_status')==true){
             DB::table('orders')
                 ->where('order_code',  Input::get('order_code'))
-                ->update(['delivered_at' => Input::get('delivery_date'),'isDelivered'=>1]);
+                ->update(['delivered_at' => Input::get('delivery_date'),'isDelivered'=>1,'whoReceived' => Input::get('whoReceived')]);
             return Redirect::to('/allOrders');
         }else{
             return Redirect::to('/login');
@@ -139,6 +153,12 @@ class OrderController extends Controller
         }else{
             return Redirect::to('/login');
         }
+    }
+
+    public function getCustomerOrders($customer){
+        $customer_orders = Order::where('customer_id',$customer)->get();
+        print_r(json_encode($customer_orders));
+       // dd($customer_orders );
     }
 
 

@@ -117,14 +117,14 @@
                         <div class="box-body">
                             <div class="form-group">
                                 <label for="product_id">Product Name</label>
-                                <select class="form-control product_details select2" name="product_id" id="product_id" style="width: 100%;">
-                                        <option selected>Select Products</option>
+                                <select class="form-control select2 product_details" name="product_id" id="product_id" style="width: 100%;">
+                                        <option>Select Products</option>
                                     @foreach ($allProducts as $product)
                                         <option value="{{$product->product_id}}">{{$product->product_name}}</option>
                                     @endforeach
                                 </select>
                             </div>
-                            <div id="product_details" class="callout callout-Info" hidden></div>
+                            <div id="product_details" class="well" hidden></div>
                             <div class="form-group">
                                 <label for="qty">Quantity</label>
                                 <input type="number" min="1" class="form-control" name="qty" id="qty" placeholder="Enter Quantity" required>
@@ -160,8 +160,9 @@
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 
-<script>
 
+
+<script>
 
 
     $( "#add" ).click(function() {
@@ -169,6 +170,7 @@
     });
     $('#order_date').datetimepicker({
         defaultDate: new Date(),
+        format: 'YYYY-MM-DD HH:mm:ss'
     });
 
     var products_on_order = [];
@@ -223,21 +225,21 @@
     function addProduct(product_id,product_name,qty) {
         var HTML = "";
         var flag_isAlreadyAdded = false;
-
-        console.log(products_on_order);
+        var discount = 12.21321312332;
+        console.log(+discount.toFixed(2));
         if(product_id!='' && qty!=''){
 
             for(product in products_on_order){
                 if(products_on_order[product].product_id==product_id){
                     products_on_order[product].qty=qty;
-                    products_on_order[product].price=document.getElementById("price").value*qty;
+                    products_on_order[product].price=+(document.getElementById("price").value*qty).toFixed(2);
                     //products_on_order[product].unit_price=products_on_order[product].qty*document.getElementById("price").value;
                     //document.getElementById("qty").innerHTML =qty;
                     flag_isAlreadyAdded = true;
                 }
             }
             if(!flag_isAlreadyAdded) {
-                products_on_order.push({product_id,product_name,qty,price:document.getElementById("price").value*qty});
+                products_on_order.push({product_id,product_name,qty,price:+(document.getElementById("price").value*qty).toFixed(2)});
                 console.log(products_on_order);
             }
             total_amount=0;
@@ -246,7 +248,7 @@
                 HTML+="<div class='row'><div class='col-md-7'><div class='box box-success box-solid' style='margin-bottom: auto; height:50px;'><div class='box-header with-border' style='height:50px;'><h3 class='box-title'><h5 style='float:left'>"+products_on_order[product].product_name+"</h5><h5 style='float:right; margin-right:10%;'>"+products_on_order[product].price+" $</h5><h5 style='float:right; margin-right:10%;'>x"+products_on_order[product].qty+"</h5><div class='box-tools pull-right'><button type='button' class='btn btn-box-tool' onclick='removeProduct("+product+");' data-widget='remove'><i class='fa fa-times'></i></button></div></div></div></div><div class='col-md-5'></div></div>";
                 document.getElementById("products_on_order").innerHTML =HTML;
             }
-            document.getElementById("total_amount").innerHTML ='<h3>Total = '+total_amount+' $</h3>';
+            document.getElementById("total_amount").innerHTML ='<h3>Total = '+total_amount.toFixed(2)+' $</h3>';
             console.log(total_amount);
         }
         else{
@@ -281,7 +283,6 @@
                   order_date:document.getElementById("order_date").value,
                   order_code:document.getElementById("order_id").value,
                   customer_id:document.getElementById("customer_id").value,
-                  /*paid_amount:document.getElementById("paid_amount").value,*/
                   vehicle_id:document.getElementById("vehicles").value,
                   full_amount:total_amount},
             dataType: 'json',

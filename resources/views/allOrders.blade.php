@@ -41,7 +41,7 @@
             <tbody>
             @foreach ($allOrders as $order)
                <tr{{-- onclick="getOrderDetails('{{$order->order_code}}')"--}}>
-                    <td>{{$order->created_at}}</td>
+                    <td>{{$order->order_date}}</td>
                     <td>{{$order->order_code}}</td>
                     <td>{{$order->customer_name}}</td>
                     <td>{{$order->full_amount}}</td>
@@ -60,6 +60,7 @@
                     <td>
                         <select class="form-control" name="option" style="width: 100%;" onchange="ActionSelected(this.value,'{{$order->order_code}}');">
                                 <option selected>Select Action</option>
+                                <option value="view_order"> View Order</option>
                                 @if($order->isDelivered==0)
                                 <option value="delivery">Add Delivery</option>
                                 @else
@@ -259,6 +260,17 @@
                             <div class="row">
                                 <div class="col-sm-8">
                                     <div class="form-group">
+                                        <label for="whoRecieved">Received Person Name</label>
+                                        <div class='input-group' style="width: 100%;">
+                                            <input type='text' class="form-control"  name='whoReceived' id='whoReceived'/>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    <div class="form-group">
                                         <label for="customer">Customer</label>
                                         <div class='input-group' style="width: 100%;">
                                             <input type='text' class="form-control"  name='customer' id='customer' readonly/>
@@ -385,6 +397,11 @@
 
 
     <script>
+        $('.modal').on('hidden.bs.modal', function (e) {
+            location.reload();
+        });
+
+
         $('#delivery_date').datetimepicker({
             defaultDate: new Date(),
             format: 'YYYY-MM-DD HH:mm:ss'
@@ -467,6 +484,9 @@
                                 console.log("error");
                             }
                         });
+                    }
+                    if(selected=="view_order"){
+                        getOrderDetails(data.order_code);
                     }
                 },
                 error: function(data)

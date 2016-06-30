@@ -30,7 +30,9 @@
                         <th>Vehicle Number</th>
                         <th>Vehicle Zone</th>
                         <th>Driver Name</th>
-
+                        <th>Vehicle Status</th>
+                        <th>Assigned Date</th>
+                        <th>Assigned Customer Zone</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -39,11 +41,34 @@
                             <td>{{$vehicle->vehicle_number}}</td>
                             <td>{{$vehicle->zone_name}}</td>
                             <td>{{$vehicle->driver_name}}</td>
+                            @if($vehicle->isAssigned==1)
+                                <td><span class="label label-danger" style="font-size: small">Assigned</span></td>
+                            @else
+                                <td><span class="label label-success" style="font-size: small">Available</span></td>
+                            @endif
+
+                            @if($vehicle->assigned_date=='0000-00-00 00:00:00')
+                                <td  style="text-align: center;">-</td>
+                            @else
+                            <td>{{$vehicle->assigned_date}}</td>
+                            @endif
+                            <td>
+                                <select class="form-control " id="customer_zone_{{$vehicle->vehicle_id}}" onchange="CustomerZoneSelected(this,'{{$vehicle->vehicle_id}}');">
+                                    @if($vehicle->isAssigned==0)
+                                        <option selected>Assign Customer Zone</option>
+                                    @else
+                                        <option value="{{$vehicle->customer_zone_name}}" selected>{{$vehicle->customer_zone_name}}</option>
+                                    @endif
+                                    @foreach($unassigned_customer_zones as $customer_zone)
+                                        <option value="{{$customer_zone->zone_id}}">{{$customer_zone->zone_name}}</option>
+                                    @endforeach
+                                </select>
+                            </td>
                         </tr>
                     @endforeach
                     </tbody>
                 </table>
-                <div class="row"><button class="btn btn-danger" style="font-size: x-large; margin: 1%;">Reset All</button></div>
+                <div class="row"><button class="btn btn-danger" style="font-size: x-large; margin: 1%;" onclick="ResetAllVehicles();">Reset All</button></div>
             </div>
             <!-- /.tab-pane -->
             <div class="tab-pane" id="tab_2">
@@ -95,5 +120,46 @@
             "autoWidth": false
         });
     });
+
+    //reset assigned vehicles to not assigned
+    function ResetAllVehicles(){
+        alertify.confirm('Are You Sure You Want to Reset All Assigned Vehicles ?', function(){
+            $.ajax({
+                url: "{{ url('/resetAllVehicles') }}",
+                type: "get",
+                dataType: 'json',
+                async:true,
+                success: function(data){
+                    alertify.success('Reset Successful')
+                    location.reload();
+                },
+                error: function(data)
+                {
+                    console.log("error");
+                }
+            });
+        });
+    }
+
+    function CustomerZoneSelected(customer_zone,vehicle_id){
+        console.log();
+        alertify.confirm('Are You Sure You Want to Assign the Vehicle to '+customer_zone.options[customer_zone.selectedIndex].text+'?', function(){
+            $.ajax({
+                url: "{{ url('/assignVehicleToCustomerZone') }}"+"/"+vehicle_id+"/"+customer_zone.value,
+                type: "get",
+                dataType: 'json',
+                async:true,
+                success: function(data){
+                    //console.log(data);
+                    alertify.success('Reset Successful')
+                    location.reload();
+                },
+                error: function(data)
+                {
+                    console.log("error");
+                }
+            });
+        });
+    }
 </script>
 @endsection

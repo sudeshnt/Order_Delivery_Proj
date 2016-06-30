@@ -133,7 +133,7 @@
                         </li><!-- /.messages-menu -->
 
                         <!-- Notifications Menu -->
-                        <li class="dropdown notifications-menu">
+                        {{--<li class="dropdown notifications-menu">
                             <!-- Menu toggle button -->
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                 <i class="fa fa-bell-o"></i>
@@ -188,7 +188,7 @@
                                     <a href="#">View all tasks</a>
                                 </li>
                             </ul>
-                        </li>
+                        </li>--}}
                         <!-- User Account Menu -->
                         <li class="dropdown user user-menu">
                             <!-- Menu Toggle Button -->
@@ -208,7 +208,7 @@
                                     </p>
                                 </li>
                                 <!-- Menu Body -->
-                                <li class="user-body">
+                                {{--<li class="user-body">
                                     <div class="col-xs-4 text-center">
                                         <a href="#">Followers</a>
                                     </div>
@@ -218,7 +218,7 @@
                                     <div class="col-xs-4 text-center">
                                         <a href="#">Friends</a>
                                     </div>
-                                </li>
+                                </li>--}}
                                 <!-- Menu Footer-->
                                 <li class="user-footer">
                                     <div class="pull-left">
@@ -325,11 +325,28 @@
                             @endif
                         </ul>
                     </li>
-                    @if(Request::path()==='products')
-                        <li class="active"><a href="{{url('products')}}"><span>Products</span></a></li>
+
+                    @if(Request::path()=='products' || Request::path()=='damagedProducts')
+                        <li class="treeview active">
                     @else
-                        <li><a href="{{url('products')}}"><span>Products</span></a></li>
+                        <li class="treeview">
                     @endif
+                        <a><span>Products</span> <i class="fa fa-angle-left pull-right"></i></a>
+                        <ul class="treeview-menu">
+                            @if(Request::path()==='products')
+                                <li class="active"><a href="{{url('products')}}"><span>Products</span></a></li>
+                            @else
+                                <li><a href="{{url('products')}}"><span>Products</span></a></li>
+                            @endif
+                                @if(Request::path()==='damagedProducts')
+                                    <li class="active"><a href="{{url('damagedProducts')}}"><span>Damaged Products</span></a></li>
+                                @else
+                                    <li><a href="{{url('damagedProducts')}}"><span>Damaged Products</span></a></li>
+                                @endif
+                        </ul>
+                        </li>
+
+
                     @if(Request::path()==='companies')
                         <li class="active"><a href="{{url('companies')}}"><span>Companies</span></a></li>
                     @else
@@ -398,7 +415,6 @@
 --}}
 
 
-    <script src="{{asset("/node_modules/alertifyjs/build/alertify.js")}}"></script>
     <script src="{{asset("/node_modules/alertifyjs/build/alertify.min.js")}}"></script>
     <!-- Bootstrap 3.3.2 JS -->
     <script src="{{ asset ("/node_modules/admin-lte/bootstrap/js/bootstrap.min.js") }}" type="text/javascript"></script>

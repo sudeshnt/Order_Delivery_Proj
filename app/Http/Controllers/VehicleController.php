@@ -28,10 +28,10 @@ class VehicleController extends Controller
             $vehicle->zone_id = Input::get('zone_id');
             $vehicle->driver_id = Input::get('driver');
             $vehicle->save();
-            //settingd the selecte driver isAssigned = true
-            $driver = Driver::where('driver_id',$vehicle->driver_id)->first();
-            $driver->isAssigned=1;
-            $driver->save();
+            //setting the selected driver isAssigned = true
+            DB::table('drivers')
+                ->where('driver_id',$vehicle->driver_id)
+                ->update(['isAssigned' => 1]);
             return Redirect::to('/vehicles');
         }else{
             return Redirect::to('/login');
@@ -49,5 +49,19 @@ class VehicleController extends Controller
             ->get();
         //dd($vehicles);
         print_r(json_encode($vehicles));
+    }
+
+    //reset all vehicle's isAssigned status to false and reset assigned date
+    public function resetAllVehicles(){
+        Vehicle::where('isAssigned', '=', 1)->update(['isAssigned' => 0 , 'assigned_date' => '0000-00-00 00:00:00' , 'customer_zone_id' => 0]);
+        print_r(json_encode('success'));
+   }
+
+    /*assign vehicle to a customer zone*/
+    public function assignVehicleToCustomerZone($vehicle_id,$customer_zone_id){
+        DB::table('vehicles')
+            ->where('vehicle_id',$vehicle_id)
+            ->update(['isAssigned' => 1,'customer_zone_id'=>$customer_zone_id,'assigned_date'=>date('Y-m-d H:i:s')]);
+        print_r(json_encode('success'));
     }
 }

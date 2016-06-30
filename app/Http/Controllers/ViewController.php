@@ -34,12 +34,42 @@ class ViewController extends Controller
 
 	public function customers(){
 		if(Session::get('loggin_status')=='true'){
+
 			$view = View::make('customers');
+
+			// generating owed customer Ids
+			$owed_customer_list = DB::table('orders')
+				->join('customers', 'orders.customer_id', '=', 'customers.customer_id')
+				->select('customers.customer_id', DB::raw('SUM(orders.full_amount) as total_sales') , DB::raw('SUM(orders.paid_amount) as total_paid'))
+				->groupBy('orders.customer_id')
+				->havingRaw('total_sales > total_paid')
+				->get();
+			$owed_customer_id_list = array();
+			foreach($owed_customer_list as $owed_customer){
+				array_push($owed_customer_id_list,$owed_customer->customer_id);
+			}
+
 			$view->allCustomers = DB::table('customers')
 					->join('zones', 'customers.zone_id', '=', 'zones.zone_id')
 					->select('customers.*', 'zones.zone_name')
 					->get();
+
+			//adding new attribute for owed customers isOwed = true
+			foreach($view->allCustomers as $customer){
+				if (in_array($customer->customer_id, $owed_customer_id_list)) {
+					$customer->isOwed = true;
+				}
+				else{
+					$customer->isOwed = false;
+				}
+			}
+
 			$view->zones_list = Zone::where('zone_type','customer')->get();
+			//get customer list that has due payments
+			$view->owed_customer_list = DB::table('orders')
+				->join('customers', 'orders.customer_id', '=', 'customers.customer_id')
+				->groupBy('orders.customer_id')
+				->get();
 			return $view;
 		}else{
 			return Redirect::to('/login');
@@ -50,12 +80,23 @@ class ViewController extends Controller
 		if(Session::get('loggin_status')=='true'){
 			$view = View::make('vehicles');
 			$view->allVehicles = DB::table('vehicles')
-				->join('zones', 'vehicles.zone_id', '=', 'zones.zone_id')
+				->join('zones as vehicleZones', 'vehicles.zone_id', '=', 'vehicleZones.zone_id')
+				->join('zones as customerZones', 'vehicles.customer_zone_id', '=', 'customerZones.zone_id')
 				->join('drivers', 'vehicles.driver_id', '=', 'drivers.driver_id')
-				->select('vehicles.*', 'zones.zone_name' , 'drivers.driver_name')
+				->select('vehicles.*', 'vehicleZones.zone_name' ,'customerZones.zone_name as customer_zone_name', 'drivers.driver_name')
 				->get();
 			$view->zones_list = Zone::where('zone_type','vehicle')->get();
 			$view->driver_list = Driver::where('isAssigned',0)->get();
+			//getting unassigned customer zones
+			$assigned_customer_zones = DB::table('vehicles')
+				 		               ->where('isAssigned',1)
+									   ->select('vehicles.customer_zone_id')->get();
+			$assigned_customer_zone_ids = array();
+			foreach($assigned_customer_zones as $customer_zone)
+				array_push($assigned_customer_zone_ids,$customer_zone->customer_zone_id);
+			$view->unassigned_customer_zones = DB::table('zones')
+					->where('zone_type','customer')
+					->whereNotIn('zone_id', $assigned_customer_zone_ids)->get();
 			return $view;
 		}else{
 			return Redirect::to('/login');
@@ -91,6 +132,7 @@ class ViewController extends Controller
 				->join('companies', 'products.company_id', '=', 'companies.company_id')
 				->select('products.*', 'companies.company_name')
 				->get();
+
 			$view->allCompanies = Company::all();
 			return $view;
 		} else {
