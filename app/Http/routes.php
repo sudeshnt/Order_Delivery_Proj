@@ -74,8 +74,26 @@ Route::get('/resetAllVehicles','VehicleController@resetAllVehicles');
 /*assign vehicle to a customer zone*/
 Route::get('/assignVehicleToCustomerZone/{vehicle_id}/{customer_zone_id}','VehicleController@assignVehicleToCustomerZone');
 
-/*get orders made by customer*/
-Route::get('/getCustomerOrders/{customer_id}','OrderController@getCustomerOrders');
+/*get orders of a product*/
+Route::get('/getProductOrders/{product_id}','OrderController@getProductOrders');
+
+/*get filtered orders of a product*/
+Route::get('/getProductOrders/{start_date}/{end_date}/{product_id}','OrderController@getFilteredProductOrders');
+
+/*add damaged Product*/
+Route::get('/addNewDamagedProducts','ProductController@addNewDamagedProducts');
+
+/*get Customer Orders*/
+Route::get('/getCustomerOrders/{customer}','OrderController@getCustomerOrders');
+
+/*get delivered Orders*/
+Route::get('/deliverdOrders','ViewController@getDeliverdOrders');
+
+/*get not yet delivered Orders*/
+Route::get('/notDeliveredOrders','ViewController@getNotDeliveredOrders');
+
+/*get details for view Orders*/
+Route::get('/viewOrder/{order_code}','OrderController@viewOrder');
 
 Route::get('/{any}', function () {
 	 return Redirect::to('/login');
@@ -117,6 +135,17 @@ Route::post('/addPayment','OrderController@addPayment');
 
 /*add Stock for Existing Product*/
 Route::post('/addStockExistingProduct','ProductController@addStockExistingProduct');
+
+/*add existing product damages*/
+Route::post('/addExistingDamaged','ProductController@addExistingDamaged');
+
+/*add new product damages*/
+Route::post('/addNewDamagedProducts','ProductController@addNewDamagedProducts');
+
+
+
+
+
 
 
 

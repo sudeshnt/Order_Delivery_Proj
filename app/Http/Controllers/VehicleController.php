@@ -45,7 +45,6 @@ class VehicleController extends Controller
             ->join('drivers', 'vehicles.driver_id', '=', 'drivers.driver_id')
             ->select('vehicles.*','drivers.driver_name')
             ->where('customer_id',$customer_id)
-            ->where('vehicles.isAssigned',0)
             ->get();
         //dd($vehicles);
         print_r(json_encode($vehicles));

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DamagedProduct;
 use App\Product;
 use Illuminate\Http\Request;
 
@@ -52,6 +53,47 @@ class ProductController extends Controller
         DB::table('products')
             ->where('product_id',Input::get('product_id'))
             ->update(['available_amount' => $product->available_amount+Input::get('added_amount')]);
+        return Redirect::to('/products');
+    }
+
+    public function addExistingDamaged(){
+        $product = Product::where('product_id',Input::get('product_id'))->first();
+        DB::table('products')
+            ->where('product_id',Input::get('product_id'))
+            ->update(['available_amount' => $product->available_amount-Input::get('damaged_qty')]);
+
+        //checking if damaged product is already existed
+        $is_exist_damaged_product = DamagedProduct::where('product_id',Input::get('product_id'))->first();
+        If($is_exist_damaged_product != ''){
+            DB::table('damaged_products')
+                ->where('product_id',Input::get('product_id'))
+                ->update(['qty' => $is_exist_damaged_product->qty+Input::get('damaged_qty')]);
+        }
+        else{
+            $damaged_product = new DamagedProduct();
+            $damaged_product->product_id = Input::get('product_id');
+            $damaged_product->qty = Input::get('damaged_qty');
+            $damaged_product->save();
+        }
+
+        return Redirect::to('/products');
+    }
+
+    public function addNewDamagedProducts(){
+        $product=new Product();
+        $product->product_name=Input::get('product_name');
+        $product->product_code=Input::get('product_code');
+        $product->available_amount=0;
+        $product->company_id=Input::get('company_id');
+        $product->isDamaged=true;
+        $product->product_size=Input::get('product_size');
+        $product->save();
+
+        $product_just_added = Product::where('product_code',Input::get('product_code'))->first();
+        $damaged_product = new DamagedProduct();
+        $damaged_product->product_id = $product_just_added->product_id;
+        $damaged_product->qty = Input::get('damaged_amount');
+        $damaged_product->save();
         return Redirect::to('/products');
     }
 }

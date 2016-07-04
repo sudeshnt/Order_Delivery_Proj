@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Role;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -70,14 +71,16 @@ class UserController extends Controller
         } else {
             // attempt to do the login
         	$user = User::where('username',Input::get('username'))->first();
+			$role = Role::where('role_id',$user->role_id)->first();
         	//user exists
 	        	if($user!=null){
 	        		//login successful
 	        		if(Crypt::decrypt($user->password) == Input::get('password')){
-	        			Session::put('users_id', $user->id);
+	        			Session::put('users_id', $user->user_id);
 		                Session::put('username', $user->username);
 		                Session::put('users_name', $user->name);
 		                Session::put('role_id', $user->role_id);
+						Session::put('role',$role->role_name);
 		                Session::put('loggin_status',true);
 	        			return Redirect::to('/dashboard');
 	        		}

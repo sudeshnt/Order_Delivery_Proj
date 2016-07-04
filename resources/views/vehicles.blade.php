@@ -56,11 +56,15 @@
                                 <select class="form-control " id="customer_zone_{{$vehicle->vehicle_id}}" onchange="CustomerZoneSelected(this,'{{$vehicle->vehicle_id}}');">
                                     @if($vehicle->isAssigned==0)
                                         <option selected>Assign Customer Zone</option>
-                                    @else
-                                        <option value="{{$vehicle->customer_zone_name}}" selected>{{$vehicle->customer_zone_name}}</option>
+                                    {{--@else
+                                        <option value="{{$vehicle->customer_zone_name}}" selected>{{$vehicle->customer_zone_name}}</option>--}}
                                     @endif
-                                    @foreach($unassigned_customer_zones as $customer_zone)
-                                        <option value="{{$customer_zone->zone_id}}">{{$customer_zone->zone_name}}</option>
+                                    @foreach($customer_zones as $customer_zone)
+                                        @if($vehicle->customer_zone_name == $customer_zone->zone_name)
+                                            <option value="{{$customer_zone->zone_id}}" selected>{{$customer_zone->zone_name}}</option>
+                                        @else
+                                            <option value="{{$customer_zone->zone_id}}">{{$customer_zone->zone_name}}</option>
+                                        @endif
                                     @endforeach
                                 </select>
                             </td>
@@ -115,7 +119,7 @@
             "paging": true,
             "lengthChange": false,
             "searching": true,
-            "ordering": false,
+            "ordering": true,
             "info": true,
             "autoWidth": false
         });
@@ -151,7 +155,7 @@
                 async:true,
                 success: function(data){
                     //console.log(data);
-                    alertify.success('Reset Successful')
+                    alertify.success('Vehicle Assignment Successful')
                     location.reload();
                 },
                 error: function(data)

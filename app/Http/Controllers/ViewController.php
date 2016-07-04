@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Company;
 use App\Customer;
+use App\DamagedProduct;
 use App\Product;
 use Illuminate\Http\Request;
 
@@ -88,15 +89,15 @@ class ViewController extends Controller
 			$view->zones_list = Zone::where('zone_type','vehicle')->get();
 			$view->driver_list = Driver::where('isAssigned',0)->get();
 			//getting unassigned customer zones
-			$assigned_customer_zones = DB::table('vehicles')
+			/*$assigned_customer_zones = DB::table('vehicles')
 				 		               ->where('isAssigned',1)
 									   ->select('vehicles.customer_zone_id')->get();
 			$assigned_customer_zone_ids = array();
 			foreach($assigned_customer_zones as $customer_zone)
-				array_push($assigned_customer_zone_ids,$customer_zone->customer_zone_id);
-			$view->unassigned_customer_zones = DB::table('zones')
+				array_push($assigned_customer_zone_ids,$customer_zone->customer_zone_id);*/
+			$view->customer_zones = DB::table('zones')
 					->where('zone_type','customer')
-					->whereNotIn('zone_id', $assigned_customer_zone_ids)->get();
+					->get();
 			return $view;
 		}else{
 			return Redirect::to('/login');
@@ -130,6 +131,7 @@ class ViewController extends Controller
 			$view = View::make('products');
 			$view->allProducts = DB::table('products')
 				->join('companies', 'products.company_id', '=', 'companies.company_id')
+				->where('products.isDamaged',false)
 				->select('products.*', 'companies.company_name')
 				->get();
 
@@ -221,5 +223,68 @@ class ViewController extends Controller
 		}else{
 			return Redirect::to('/login');
 		}
+	}
+
+	//open damaged Products page
+	public function damagedProducts(){
+		if(Session::get('loggin_status')=='true'){
+
+			$view = View::make('damagedProducts');
+			$view->allProducts = Product::all();
+			$view->allCompanies = Company::all();
+
+			$view->allDamagedProducts = DB::table('damaged_products')
+				->join('products', 'damaged_products.product_id', '=', 'products.product_id')
+				->join('companies', 'products.company_id', '=', 'companies.company_id')
+				->select('damaged_products.*', 'products.*','companies.company_name')
+				->get();
+			//dd();
+			$all_damaged_in_each_company = array();
+			foreach($view->allDamagedProducts as $damaged)
+			{
+				$all_damaged_in_each_company[$damaged->company_name] = array();
+			}
+			foreach ($view->allDamagedProducts as $damaged)
+			{
+				array_push($all_damaged_in_each_company[$damaged->company_name],$damaged);
+			}
+			//dd($customers);
+			$view->all_damaged_in_each_company = $all_damaged_in_each_company;
+			$view->index=0;
+
+			return $view;
+		}else{
+			return Redirect::to('/login');
+		}
+	}
+
+	// get Deliverd Orders
+	public function getDeliverdOrders(){
+		$view = View::make('allOrders');
+		$view->allOrders = DB::table('orders')
+			->join('customers', 'customers.customer_id', '=', 'orders.customer_id')
+			->join('vehicles', 'orders.vehicle_id', '=', 'vehicles.vehicle_id')
+			->join('drivers', 'vehicles.driver_id', '=', 'drivers.driver_id')
+			->select('orders.*', 'customers.*','vehicles.vehicle_number','drivers.driver_name')
+			->where('orders.isDelivered',1)
+			->orderBy('orders.order_date','desc')
+			->get();
+		//dd($view->allOrders);
+		return $view;
+	}
+
+	//get Not Delivered Orders
+	public function getNotDeliveredOrders(){
+		$view = View::make('allOrders');
+		$view->allOrders = DB::table('orders')
+			->join('customers', 'customers.customer_id', '=', 'orders.customer_id')
+			->join('vehicles', 'orders.vehicle_id', '=', 'vehicles.vehicle_id')
+			->join('drivers', 'vehicles.driver_id', '=', 'drivers.driver_id')
+			->select('orders.*', 'customers.*','vehicles.vehicle_number','drivers.driver_name')
+			->where('orders.isDelivered',0)
+			->orderBy('orders.order_date','desc')
+			->get();
+		//dd($view->allOrders);
+		return $view;
 	}
 }

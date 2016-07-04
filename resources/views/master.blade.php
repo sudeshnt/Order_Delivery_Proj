@@ -54,16 +54,23 @@
         <script src="{{ asset("/node_modules/admin-lte/plugins/input-mask/jquery.inputmask.date.extensions.js")}}"></script>
         <script src="{{ asset("/node_modules/admin-lte/plugins/input-mask/jquery.inputmask.extensions.js")}}"></script>
 
-
         <!-- bootstrap datepicker -->
         <script src="{{ asset("/node_modules/admin-lte/plugins/datepicker/bootstrap-datepicker.js")}}"></script>
         <link rel="stylesheet" href="{{ asset("/node_modules/admin-lte/plugins/datepicker/datepicker3.css")}}">
+
+        <!-- bootstrap daterangepicker -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
+        <script src="{{ asset("/node_modules/admin-lte/plugins/daterangepicker/daterangepicker.js")}}"></script>
+        <link rel="stylesheet" href="{{ asset("/node_modules/admin-lte/plugins/daterangepicker/daterangepicker-bs3.css")}}">
 
         <!-- ... -->
         {{--<script type="text/javascript" src="{{ asset("/bower_components/jquery/jquery.min.js")}}"></script>--}}
         <script type="text/javascript" src="{{ asset("/bower_components/moment/min/moment.min.js")}}"></script>
         <script type="text/javascript" src="{{ asset("/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js")}}"></script>
         <link rel="stylesheet" href="{{ asset("/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css")}}" />
+
+
+
 
         <!-- styles -->
         <style type="text/css">
@@ -196,14 +203,14 @@
                                 <!-- The user image in the navbar-->
                                 <img src="{{ asset("/node_modules/admin-lte/dist/img/user2-160x160.jpg") }}" class="user-image" alt="User Image"/>
                                 <!-- hidden-xs hides the username on small devices so only the image appears. -->
-                                <span class="hidden-xs">Alexander Pierce</span>
+                                <span class="hidden-xs">{{Session::get('users_name')}}</span>
                             </a>
                             <ul class="dropdown-menu">
                                 <!-- The user image in the menu -->
                                 <li class="user-header">
                                     <img src="{{ asset("/node_modules/admin-lte/dist/img/user2-160x160.jpg") }}" class="img-circle" alt="User Image" />
                                     <p>
-                                        Alexander Pierce - Web Developer
+                                        {{Session::get('users_name')}} -  {{Session::get('role')}}
                                         <small>Member since Nov. 2012</small>
                                     </p>
                                 </li>
@@ -246,7 +253,7 @@
                         <img src="{{ asset("/node_modules/admin-lte/dist/img/user2-160x160.jpg") }}" class="img-circle" alt="User Image" />
                     </div>
                     <div class="pull-left info">
-                        <p>Alexander Pierce</p>
+                        <p>{{Session::get('users_name')}}</p>
                         <!-- Status -->
                       <!--   <a href="#"><i class="fa fa-circle text-success"></i> Online</a> -->
                     </div>
@@ -424,6 +431,7 @@
     {{--datatable--}}
     <script src="{{ asset("/node_modules/admin-lte/plugins/datatables/jquery.dataTables.min.js")}}"></script>
     <script src="{{ asset("/node_modules/admin-lte/plugins/datatables/dataTables.bootstrap.min.js")}}"></script>
+
 
 
 

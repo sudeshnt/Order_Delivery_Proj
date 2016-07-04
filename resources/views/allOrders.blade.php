@@ -35,7 +35,8 @@
                 <th>Balance</th>
                 <th style="width: 56px;">Payment Status</th>
                 <th style="width: 52px;">Delivery Status</th>
-                <th>Actions</th>
+                <th>Delivered By</th>
+                <th style="width:102px;">Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -57,6 +58,7 @@
                    @else
                        <td><span class="label label-danger" style="font-size: small">Pending</span></td>
                    @endif
+                   <td>{{$order->vehicle_number}} : {{$order->driver_name}}</td>
                     <td>
                         <select class="form-control" name="option" style="width: 100%;" onchange="ActionSelected(this.value,'{{$order->order_code}}');">
                                 <option selected>Select Action</option>
@@ -66,10 +68,12 @@
                                 @else
                                 <option value="delivery" disabled>Add Delivery</option>
                                 @endif
-                                @if($order->isPaid==0)
-                                    <option value="payment">Add Payment</option>
-                                @else
-                                    <option value="payment" disabled>Add Payment</option>
+                                @if(Session::get('role')=='Admin' || Session::get('role')== 'Cashier')
+                                    @if($order->isPaid==0)
+                                        <option value="payment">Add Payment</option>
+                                    @else
+                                        <option value="payment" disabled>Add Payment</option>
+                                    @endif
                                 @endif
                                 <option value="view_payments">View Payments</option>
                         </select>
@@ -86,7 +90,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <div class="well well-lg">asdasdsa</div>
+                    {{--<div class="well well-lg">asdasdsa</div>--}}
                 </div>
                 <div class="modal-body">
                     <div class="box-body">
@@ -96,34 +100,33 @@
                                 <div class="col-xs-12">
                                     <h2 class="page-header">
                                         <i class="fa fa-globe"></i> AdminLTE, Inc.
-                                        <small class="pull-right">Date: 2/10/2014</small>
+                                        {{--<small class="pull-right">Date: 2/10/2014</small>--}}
                                     </h2>
                                 </div>
                                 <!-- /.col -->
                             </div>
                             <!-- info row -->
                             <div class="row invoice-info">
-                                <div class="col-sm-4 invoice-col">
-                                    From
+                                <div class="col-sm-5 invoice-col">
+                                    To
                                     <address>
-                                        <strong>Admin, Inc.</strong><br>
-                                        795 Folsom Ave, Suite 600<br>
-                                        San Francisco, CA 94107<br>
-                                        Phone: (804) 123-5432<br>
-                                        Email: info@almasaeedstudio.com
+                                        <strong id="customer_name"></strong><br>
+                                        <div id="business_name"></div>
+                                        <div id="customer_address"></div>
+                                        <div id="customer_mobile"></div>
+                                        <div id="customer_email"></div>
                                     </address>
                                 </div>
                                 <!-- /.col -->
-                                <div class="col-sm-4 invoice-col">
+                                <div class="col-sm-2 invoice-col">
 
                                 </div>
                                 <!-- /.col -->
-                                <div class="col-sm-4 invoice-col">
-                                    <b>Invoice #007612</b><br>
+                                <div class="col-sm-5 invoice-col" style="padding: 0px;">
                                     <br>
-                                    <b>Order ID:</b> 4F3S8J<br>
-                                    <b>Payment Due:</b> 2/22/2014<br>
-                                    <b>Account:</b> 968-34567
+                                    <br>
+                                    <div id="order_code"></div>
+                                    <div id="order_date"></div>
                                 </div>
                                 <!-- /.col -->
                             </div>
@@ -134,43 +137,16 @@
                                 <div class="col-xs-12 table-responsive">
                                     <table class="table table-striped">
                                         <thead>
-                                        <tr>
-                                            <th>Qty</th>
-                                            <th>Product</th>
-                                            <th>Serial #</th>
-                                            <th>Description</th>
-                                            <th>Subtotal</th>
-                                        </tr>
+                                            <tr>
+                                                <th>Product Code</th>
+                                                <th>Product</th>
+                                                <th>Qty</th>
+                                                <th>Unit Price</th>
+                                                <th>Subtotal</th>
+                                            </tr>
                                         </thead>
-                                        <tbody>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>Call of Duty</td>
-                                            <td>455-981-221</td>
-                                            <td>El snort testosterone trophy driving gloves handsome</td>
-                                            <td>$64.50</td>
-                                        </tr>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>Need for Speed IV</td>
-                                            <td>247-925-726</td>
-                                            <td>Wes Anderson umami biodiesel</td>
-                                            <td>$50.00</td>
-                                        </tr>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>Monsters DVD</td>
-                                            <td>735-845-642</td>
-                                            <td>Terry Richardson helvetica tousled street art master</td>
-                                            <td>$10.70</td>
-                                        </tr>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>Grown Ups Blue Ray</td>
-                                            <td>422-568-642</td>
-                                            <td>Tousled lomo letterpress</td>
-                                            <td>$25.99</td>
-                                        </tr>
+                                        <tbody id="products_table_content">
+
                                         </tbody>
                                     </table>
                                 </div>
@@ -185,11 +161,10 @@
                                 </div>
                                 <!-- /.col -->
                                 <div class="col-xs-6">
-                                    <p class="lead">Amount Due 2/22/2014</p>
 
                                     <div class="table-responsive">
                                         <table class="table">
-                                            <tr>
+                                            {{--<tr>
                                                 <th style="width:50%">Subtotal:</th>
                                                 <td>$250.30</td>
                                             </tr>
@@ -200,10 +175,10 @@
                                             <tr>
                                                 <th>Shipping:</th>
                                                 <td>$5.80</td>
-                                            </tr>
+                                            </tr>--}}
                                             <tr>
                                                 <th>Total:</th>
-                                                <td>$265.24</td>
+                                                <td><p id="full_amount"></p></td>
                                             </tr>
                                         </table>
                                     </div>
@@ -215,7 +190,7 @@
                     </div>
                     <!-- /.box-body -->
                     <div class="box-footer">
-                        <button type="button" class="btn btn-primary" onclick="generate_products_table();" style="margin-bottom: -3%">Save List</button>
+                        <button type="button" class="btn btn-danger"  style="float:right;"  data-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div><!-- /.modal-content -->
@@ -417,7 +392,7 @@
                 "paging": true,
                 "lengthChange": false,
                 "searching": true,
-                "ordering": false,
+                "ordering": true,
                 "info": true,
                 "autoWidth": false
             });
@@ -475,7 +450,7 @@
                                     table_content+='<tr><td>'+String("000000" + payments.payment_id).slice(-6)+'</td><td>'+payments.payment_date+'</td><td>'+payments.amount+'</td></tr>';
                                     total_paid+=payments.amount;
                                 }
-                                table_content+='<tr><td></td><td>Total Paid</td><td>'+total_paid+' $</td></tr>'
+                                table_content+='<tr><td></td><td>Total Paid</td><td>'+total_paid+' ₦</td></tr>'
                                 table_content+='</tbody></table>';
                                 document.getElementById("payments_table_div").innerHTML =table_content;
                             },
@@ -486,7 +461,37 @@
                         });
                     }
                     if(selected=="view_order"){
-                        getOrderDetails(data.order_code);
+                        //getOrderDetails(data.order_code);
+                        $.ajax({
+                            url: "{{ url('/viewOrder') }}"+"/"+data.order_code,
+                            type: "get",
+                            dataType: 'json',
+                            async:true,
+                            success: function(data){
+                                console.log(data);
+                                document.getElementById("customer_name").innerHTML =data[0].customer_name;
+                                document.getElementById("business_name").innerHTML =data[0].business_name;
+                                document.getElementById("customer_address").innerHTML =data[0].customer_address;
+                                document.getElementById("customer_mobile").innerHTML ='Phone: '+data[0].customer_mobile;
+                                document.getElementById("customer_email").innerHTML ='Email: '+data[0].email;
+
+                                document.getElementById("order_code").innerHTML = '<b>Order Id : </b>'+data[0].order_code;
+                                document.getElementById("order_date").innerHTML = '<b>Order Date : </b>'+data[0].order_date;
+
+                                document.getElementById("full_amount").innerHTML = data[0].full_amount;
+                                var table_content='';
+                                for(product of data[1]){
+                                    console.log(product);
+                                    table_content+='<tr><td>'+product.product_code+'</td><td>'+product.product_name+'</td><td>'+product.qty+'</td><td>'+product.unit_price+'</td><td>'+(product.qty*product.unit_price).toFixed(2)+'</td></tr>';
+                                }
+                                document.getElementById("products_table_content").innerHTML = table_content;
+                                $('#myModal').modal('show');
+                            },
+                            error: function(data)
+                            {
+                                console.log("error");
+                            }
+                        });
                     }
                 },
                 error: function(data)

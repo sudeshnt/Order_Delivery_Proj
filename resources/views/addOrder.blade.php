@@ -245,10 +245,10 @@
             total_amount=0;
             for(product in products_on_order){
                 total_amount+=products_on_order[product].price;
-                HTML+="<div class='row'><div class='col-md-7'><div class='box box-success box-solid' style='margin-bottom: auto; height:50px;'><div class='box-header with-border' style='height:50px;'><h3 class='box-title'><h5 style='float:left'>"+products_on_order[product].product_name+"</h5><h5 style='float:right; margin-right:10%;'>"+products_on_order[product].price+" $</h5><h5 style='float:right; margin-right:10%;'>x"+products_on_order[product].qty+"</h5><div class='box-tools pull-right'><button type='button' class='btn btn-box-tool' onclick='removeProduct("+product+");' data-widget='remove'><i class='fa fa-times'></i></button></div></div></div></div><div class='col-md-5'></div></div>";
+                HTML+="<div class='row'><div class='col-md-7'><div class='box box-success box-solid' style='margin-bottom: auto; height:50px;'><div class='box-header with-border' style='height:50px;'><h3 class='box-title'><h5 style='float:left'>"+products_on_order[product].product_name+"</h5><h5 style='float:right; margin-right:10%;'>₦"+products_on_order[product].price+"</h5><h5 style='float:right; margin-right:10%;'>x"+products_on_order[product].qty+"</h5><div class='box-tools pull-right'><button type='button' class='btn btn-box-tool' onclick='removeProduct("+product+");' data-widget='remove'><i class='fa fa-times'></i></button></div></div></div></div><div class='col-md-5'></div></div>";
                 document.getElementById("products_on_order").innerHTML =HTML;
             }
-            document.getElementById("total_amount").innerHTML ='<h3>Total = '+total_amount.toFixed(2)+' $</h3>';
+            document.getElementById("total_amount").innerHTML ='<h3>Total = ₦ '+total_amount.toFixed(2)+'</h3>';
             console.log(total_amount);
         }
         else{
@@ -258,7 +258,7 @@
 
     function removeProduct(product){
                 total_amount-=products_on_order[product].price;
-                document.getElementById("total_amount").innerHTML ='<h3>Total = '+total_amount+' $</h3>';
+                document.getElementById("total_amount").innerHTML ='<h3>Total = ₦ '+total_amount+'</h3>';
                 products_on_order.splice(product, 1);
                 console.log(products_on_order);
     };
@@ -266,11 +266,12 @@
     function generate_products_table(){
         var table_content = '<table id="products_table"  class="table table-bordered table-hover allTables"><thead><tr><th>Product Name</th><th>Quantity</th><th>Price</th></tr> </thead><tbody>';
         for(product in products_on_order){
-            table_content+='<tr><td>'+products_on_order[product].product_name+'</td><td>x '+products_on_order[product].qty+'</td><td>'+products_on_order[product].price+' $</td></tr>';
+            table_content+='<tr><td>'+products_on_order[product].product_name+'</td><td>x '+products_on_order[product].qty+'</td><td> ₦ '+products_on_order[product].price+'</td></tr>';
         }
-        table_content+='<tr><td></td><td>Total</td><td>'+total_amount+' $</td></tr>'
+        table_content+='<tr><td></td><td>Total</td><td>₦ '+total_amount+'</td></tr>'
         table_content+='</tbody></table>';
         document.getElementById("products_table_div").innerHTML =table_content;
+        $('#myModal').modal('hide');
         console.log(products_on_order);
     }
 
@@ -306,8 +307,9 @@
             dataType: 'json',
             async:true,
             success: function(data){
+                //console.log(data);
                 var select = document.getElementById("vehicles");
-                select.innerHTML = '<option selected></option>';
+                /*select.innerHTML = '<option selected></option>';*/
                 for(vehicle of data)
                 {
                     console.log(vehicle);

@@ -1,7 +1,7 @@
 @extends('master')
 
 @section('content')
-        <!-- Main content -->
+<!-- Main content -->
 <section class="invoice" id="printableArea">
     <!-- title row -->
     <div class="row">
@@ -21,7 +21,8 @@
                 <strong>{{$order_details->customer_name}}</strong><br>
                 <p>{{$order_details->business_name}}</p>
                 {{$order_details->customer_address}}<br>
-                {{$order_details->customer_mobile}}<br>
+                Phone : {{$order_details->customer_mobile}}<br>
+                Email : {{$order_details->email}}<br>
             </address>
         </div>
         <!-- /.col -->
@@ -44,13 +45,13 @@
         <div class="col-xs-12 table-responsive">
             <table class="table table-striped">
                 <thead>
-                <tr>
-                    <th>Product Code</th>
-                    <th>Product</th>
-                    <th>Qty</th>
-                    <th>Unit Price</th>
-                    <th>Subtotal</th>
-                </tr>
+                    <tr>
+                        <th>Product Code</th>
+                        <th>Product</th>
+                        <th>Qty</th>
+                        <th>Unit Price</th>
+                        <th>Subtotal</th>
+                    </tr>
                 </thead>
                 <tbody>
                 @foreach($products_on_order as $product)
