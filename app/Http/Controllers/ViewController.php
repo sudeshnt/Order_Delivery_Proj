@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Company;
 use App\Customer;
 use App\DamagedProduct;
+use App\Order;
 use App\Product;
+use App\Vehicle;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -27,6 +29,32 @@ class ViewController extends Controller
 	public function dashboard(){
 		if(Session::get('loggin_status')=='true'){
 			$view = View::make('dashboard');
+			//getting top
+			$view->topOwedCustomers = DB::table('orders')
+									->join('customers', 'orders.customer_id', '=', 'customers.customer_id')
+									->select('customers.*', DB::raw('SUM(orders.full_amount)-SUM(orders.paid_amount) as total_owe') )
+									->groupBy('orders.customer_id')
+									->havingRaw('total_owe > 0')
+									->orderBy('total_owe','desc')
+									->take(5)
+									->get();
+			$view->topOutofStockProducts = DB::table('products')
+									->join('companies', 'products.company_id', '=', 'companies.company_id')
+									->orderBy('available_amount','asc')
+									->where('products.available_amount','<=',0)
+									->take(5)
+									->get();
+			// getting counts of all
+			$view->order_count = Order::count();
+			$view->customer_count = Customer::count();
+			$view->customer_zones_count = Zone::where('zone_type','customer')->count();
+			$view->vehicle_count = Vehicle::count();
+			$view->vehicle_zones_count = Zone::where('zone_type','vehicle')->count();
+			$view->product_count = Product::count();
+			$view->company_count = Company::count();
+
+			//	dd($view);
+			//dd($topOutofStockProducts);
 			return $view;
 		}else{
 			return Redirect::to('/login');

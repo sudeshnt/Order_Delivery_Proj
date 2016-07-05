@@ -6,8 +6,10 @@ use App\Role;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
+//use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
 use App\User;
 use Validator;
@@ -81,6 +83,7 @@ class UserController extends Controller
 		                Session::put('users_name', $user->name);
 		                Session::put('role_id', $user->role_id);
 						Session::put('role',$role->role_name);
+						Session::put('user_created_at', $user->created_at);
 		                Session::put('loggin_status',true);
 	        			return Redirect::to('/dashboard');
 	        		}
@@ -103,4 +106,42 @@ class UserController extends Controller
     	Session::flush();
         return Redirect::to('/login');
     }
+
+	// reset password
+	public function resetPassword(){
+		$view = View::make('reset_password');
+		return $view;
+	}
+
+	//check password and redirect
+	public function checkPassword(){
+		$view = View::make('reset_password');
+		$userPassword = User::where('user_id',Session::get('users_id'))->first()->password;
+		if(Crypt::decrypt($userPassword) == Input::get('old_password')){
+			$view->message='resetting';
+		}
+		//dd($userPassword);
+		return $view;
+	}
+
+	//set new password
+	public function setNewPassword(){
+		$view = View::make('reset_password');
+		$rules = array(
+			'new_password'    => 'required', // make sure username is entered
+			'confirm_new_password' => 'required|same:new_password', //  make sure password is entered
+		);
+		$validator = Validator::make(Input::all(), $rules);
+		if ($validator->fails()) {
+			$view->message='resetting';
+			$view->validation_message = "passwords_doent_match";
+			return $view->withErrors($validator);
+		}
+		else{
+			DB::table('users')
+				->where('user_id', Session::get('users_id'))
+				->update(['password' => Crypt::encrypt( Input::get('new_password'))]);
+		}
+		return $view;
+	}
 }

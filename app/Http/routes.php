@@ -95,6 +95,9 @@ Route::get('/notDeliveredOrders','ViewController@getNotDeliveredOrders');
 /*get details for view Orders*/
 Route::get('/viewOrder/{order_code}','OrderController@viewOrder');
 
+/*reset password*/
+Route::get('/resetPassword','UserController@resetPassword');
+
 Route::get('/{any}', function () {
 	 return Redirect::to('/login');
 });
@@ -142,7 +145,11 @@ Route::post('/addExistingDamaged','ProductController@addExistingDamaged');
 /*add new product damages*/
 Route::post('/addNewDamagedProducts','ProductController@addNewDamagedProducts');
 
+/*check password*/
+Route::post('/checkPassword','UserController@checkPassword');
 
+/*set new password*/
+Route::post('/setNewPassword','UserController@setNewPassword');
 
 
 
