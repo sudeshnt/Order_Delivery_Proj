@@ -8,6 +8,7 @@ use App\DamagedProduct;
 use App\Order;
 use App\Product;
 use App\Vehicle;
+use DateTime;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -23,6 +24,8 @@ use Session;
 use App\Zone;
 use DB;
 use App\Driver;
+
+use Carbon\Carbon;
 
 class ViewController extends Controller
 {		
@@ -53,8 +56,39 @@ class ViewController extends Controller
 			$view->product_count = Product::count();
 			$view->company_count = Company::count();
 
-			//	dd($view);
-			//dd($topOutofStockProducts);
+			//getting top drivers
+
+			/*$view->topDrivers = DB::table('orders')
+										->join('vehicles', 'orders.vehicle_id', '=', 'vehicles.vehicle_id')
+										->join('drivers', 'vehicles.driver_id', '=', 'drivers.driver_id')
+										->select('orders.order_date','orders.delivered_at','vehicles.*','drivers.*', DB::raw("avg(DATEDIFF(orders.delivered_at,orders.order_date)) AS average_minutes"))
+										->groupBy('orders.vehicle_id')
+										->where('orders.isDelivered',1)
+										->get();*/
+
+			$view->topDrivers = DB::table('orders')
+				->join('vehicles', 'orders.vehicle_id', '=', 'vehicles.vehicle_id')
+				->join('drivers', 'vehicles.driver_id', '=', 'drivers.driver_id')
+				->select('orders.order_date','orders.delivered_at','vehicles.*','drivers.*')
+				->where('orders.isDelivered',1)
+				->get();
+			$delivery_driver_list = Order::join('vehicles','vehicles.vehicle_id', '=', 'orders.vehicle_id')
+										->join('drivers','drivers.driver_id', '=', 'vehicles.driver_id')
+										->select('drivers.driver_id')->distinct()->get();
+			$delivery_times = array();
+			$average_delivery_times = array();
+			foreach ($delivery_driver_list as $driver)
+			{
+				$delivery_times[$driver->driver_id] = array();
+			}
+			foreach($view->topDrivers as $driver){
+				array_push($delivery_times[$driver->driver_id],Carbon::parse($driver->order_date)->diffInHours(Carbon::parse($driver->delivered_at)));
+				$average_delivery_times[$driver->driver_id]=array_sum($delivery_times[$driver->driver_id])/count($delivery_times[$driver->driver_id]);
+			}
+			dd($delivery_times,$average_delivery_times);
+
+			//dd($view->topDrivers);
+			//dd('2012-12-topDrivers'-'2012-10-1');
 			return $view;
 		}else{
 			return Redirect::to('/login');
