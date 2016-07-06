@@ -9,6 +9,7 @@
     </h1>
 </section>
 <div class="nav-tabs-custom">
+
     <div class="row" style="padding-top: 20px;">
 
         <div class="col-lg-3 col-xs-6">
@@ -73,6 +74,40 @@
 <!-- /.row -->
 
 {{--tables--}}
+    {{--table for unseen latest orders--}}
+    @if(Session::get('role_id')==3)
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="box box-info collapsed-box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">TOP DRIVERS</h3>
+                        <a href="#" style="margin-left: 10px">
+                            <i class="fa fa-envelope-o" style="font-size: x-large;"></i>
+                            <span class="label label-success" data-widget="collapse" onclick="clickedNewOrders();">4</span>
+                        </a>
+
+                        <div class="box-tools pull-right" >
+
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                            </button>
+                            {{--<button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>--}}
+                        </div>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body">
+
+                        <!-- /.table-responsive -->
+                    </div>
+                    <!-- /.box-body -->
+                    <div class="box-footer clearfix">
+                        {{-- <a href="javascript:void(0)" class="btn btn-sm btn-info btn-flat pull-left">Place New Order</a>--}}
+                        <a href="{{url('/drivers')}}" class="btn btn-sm btn-default btn-flat pull-right">View All Drivers</a>
+                    </div>
+                    <!-- /.box-footer -->
+                </div>
+            </div>
+        </div>
+        @endif
         <!-- TABLE: LATEST ORDERS -->
     <div class="row">
         {{--top owing customers table--}}
@@ -84,7 +119,7 @@
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
                         </button>
-                        <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                        {{--<button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>--}}
                     </div>
                 </div>
                 <!-- /.box-header -->
@@ -116,7 +151,7 @@
                 <!-- /.box-body -->
                 <div class="box-footer clearfix">
                    {{-- <a href="javascript:void(0)" class="btn btn-sm btn-info btn-flat pull-left">Place New Order</a>--}}
-                    <a href="javascript:void(0)" class="btn btn-sm btn-default btn-flat pull-right">View All Orders</a>
+                    <a href="{{url('/customers')}}" class="btn btn-sm btn-default btn-flat pull-right">View All Customers</a>
                 </div>
                 <!-- /.box-footer -->
             </div>
@@ -130,7 +165,7 @@
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
                         </button>
-                        <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                       {{-- <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>--}}
                     </div>
                 </div>
                 <!-- /.box-header -->
@@ -162,7 +197,55 @@
                 <!-- /.box-body -->
                 <div class="box-footer clearfix">
                     {{-- <a href="javascript:void(0)" class="btn btn-sm btn-info btn-flat pull-left">Place New Order</a>--}}
-                    <a href="javascript:void(0)" class="btn btn-sm btn-default btn-flat pull-right">View All Orders</a>
+                    <a href="{{url('/products')}}" class="btn btn-sm btn-default btn-flat pull-right">View All Products</a>
+                </div>
+                <!-- /.box-footer -->
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-7">
+            <div class="box box-info">
+                <div class="box-header with-border">
+                    <h3 class="box-title">TOP DRIVERS</h3>
+
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                        </button>
+                        {{--<button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>--}}
+                    </div>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <div class="table-responsive">
+                        <table class="table no-margin">
+                            <thead>
+                            <tr>
+                                <th style="text-align: center;">Driver</th>
+                                <th style="text-align: center;">Vehicle Number</th>
+                                <th style="text-align: center;">Number of Deliveries</th>
+                                <th style="text-align: center;">Average time taken</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach($bestDrivers as $driver)
+                                <tr>
+                                    <td>{{$driver[2]}}</td>
+                                    <td>{{$driver[3]}}</td>
+                                    <td style="width:130px;;">{{$driver[4]}}</td>
+                                    <td style="text-align: left;"><span class="label label-success" style="font-size: small;">{{$driver[1]}}</span></td>
+                                </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.table-responsive -->
+                </div>
+                <!-- /.box-body -->
+                <div class="box-footer clearfix">
+                    {{-- <a href="javascript:void(0)" class="btn btn-sm btn-info btn-flat pull-left">Place New Order</a>--}}
+                    <a href="{{url('/drivers')}}" class="btn btn-sm btn-default btn-flat pull-right">View All Drivers</a>
                 </div>
                 <!-- /.box-footer -->
             </div>
@@ -170,4 +253,9 @@
     </div>
 </div>
 <!-- /.box -->
+<script>
+    function clickedNewOrders(){
+        console.log('seen by cashier');
+    }
+</script>
 @endsection

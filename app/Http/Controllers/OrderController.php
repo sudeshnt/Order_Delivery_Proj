@@ -118,8 +118,8 @@ class OrderController extends Controller
     public function addDelivery(){
         if(Session::get('loggin_status')==true){
             DB::table('orders')
-                ->where('order_code',  Input::get('order_code'))
-                ->update(['delivered_at' => Input::get('delivery_date'),'isDelivered'=>1,'whoReceived' => Input::get('whoReceived')]);
+                ->where('order_code',  Input::get('order_code_del'))
+                ->update(['delivered_at' => Input::get('delivery_date'),'driver_returned_time' => Input::get('returned_date'),'isDelivered'=>1,'whoReceived' => Input::get('whoReceived')]);
             return Redirect::to('/allOrders');
         }else{
             return Redirect::to('/login');

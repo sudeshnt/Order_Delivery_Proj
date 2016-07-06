@@ -58,41 +58,42 @@ class ViewController extends Controller
 
 			//getting top drivers
 
-			/*$view->topDrivers = DB::table('orders')
-										->join('vehicles', 'orders.vehicle_id', '=', 'vehicles.vehicle_id')
-										->join('drivers', 'vehicles.driver_id', '=', 'drivers.driver_id')
-										->select('orders.order_date','orders.delivered_at','vehicles.*','drivers.*', DB::raw("avg(DATEDIFF(orders.delivered_at,orders.order_date)) AS average_minutes"))
-										->groupBy('orders.vehicle_id')
-										->where('orders.isDelivered',1)
-										->get();*/
-
-			$view->topDrivers = DB::table('orders')
-				->join('vehicles', 'orders.vehicle_id', '=', 'vehicles.vehicle_id')
-				->join('drivers', 'vehicles.driver_id', '=', 'drivers.driver_id')
-				->select('orders.order_date','orders.delivered_at','vehicles.*','drivers.*')
-				->where('orders.isDelivered',1)
-				->get();
+			$allOrders = DB::table('orders')
+									->join('vehicles', 'orders.vehicle_id', '=', 'vehicles.vehicle_id')
+									->join('drivers', 'vehicles.driver_id', '=', 'drivers.driver_id')
+									->select('orders.order_date','orders.driver_returned_time','vehicles.*','drivers.*')
+									->where('orders.isDelivered',1)
+									->get();
 			$delivery_driver_list = Order::join('vehicles','vehicles.vehicle_id', '=', 'orders.vehicle_id')
 										->join('drivers','drivers.driver_id', '=', 'vehicles.driver_id')
 										->select('drivers.driver_id')->distinct()->get();
 			$delivery_times = array();
-			$average_delivery_times = array();
+			$driver_stats = array();
 			foreach ($delivery_driver_list as $driver)
 			{
 				$delivery_times[$driver->driver_id] = array();
 			}
-			foreach($view->topDrivers as $driver){
-				array_push($delivery_times[$driver->driver_id],Carbon::parse($driver->order_date)->diffInHours(Carbon::parse($driver->delivered_at)));
-				$average_delivery_times[$driver->driver_id]=array_sum($delivery_times[$driver->driver_id])/count($delivery_times[$driver->driver_id]);
+			foreach($allOrders as $driver){
+				array_push($delivery_times[$driver->driver_id],Carbon::parse($driver->order_date)->diffInSeconds(Carbon::parse($driver->driver_returned_time)));
+				$seconds = ceil(array_sum($delivery_times[$driver->driver_id])/count($delivery_times[$driver->driver_id]));
+				$driver_stats[$driver->driver_id]=[$seconds,(new \DateTime('@0'))->diff(new \DateTime("@$seconds"))->format('%a days, %h hours, %i minutes and %s seconds'),$driver->driver_name,$driver->vehicle_number,count($delivery_times[$driver->driver_id])];
 			}
-			dd($delivery_times,$average_delivery_times);
+			asort($driver_stats);
+			$view->bestDrivers = array_slice($driver_stats, 0, 5);
 
-			//dd($view->topDrivers);
-			//dd('2012-12-topDrivers'-'2012-10-1');
+			//get unseen orders for cashier
+			if(Session::get('role_id')==3){
+
+			}
+
 			return $view;
 		}else{
 			return Redirect::to('/login');
 		}
+	}
+
+	function secondsToTime($seconds) {
+
 	}
 
 	public function customers(){

@@ -225,9 +225,22 @@
                                 <div class='col-sm-2'></div>
                                 <div class='col-sm-4'>
                                     <div class="form-group">
-                                        <label for="order_code">Order ID</label>
+                                        <label for="order_code_del">Order ID</label>
                                         <div class='input-group'>
-                                            <input type='text' class="form-control"  name='order_code' id='order_code' readonly/>
+                                            <input type='text' class="form-control"  name='order_code_del' id='order_code_del' readonly/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class='col-sm-6'>
+                                    <div class="form-group">
+                                        <label for="returned_date">Driver Reporting Date</label>
+                                        <div class='input-group date'>
+                                            <input type='text' class="form-control"  name='returned_date' id='returned_date'/>
+                                                    <span class="input-group-addon">
+                                                        <span class="glyphicon glyphicon-calendar"></span>
+                                                    </span>
                                         </div>
                                     </div>
                                 </div>
@@ -382,6 +395,11 @@
             format: 'YYYY-MM-DD HH:mm:ss'
         });
 
+        $('#returned_date').datetimepicker({
+            defaultDate: new Date(),
+            format: 'YYYY-MM-DD HH:mm:ss'
+        });
+
         $('#payment_date').datetimepicker({
             defaultDate: new Date(),
             format: 'YYYY-MM-DD HH:mm:ss'
@@ -425,7 +443,7 @@
                     console.log(data);
                     if(selected=='delivery'){
                         $('#deliveryModal').modal('show');
-                        $('#order_code').val(data.order_code);
+                        $('#order_code_del').val(data.order_code);
                         $('#customer').val(data.customer_name);
                         $('#delivery_address').val(data.customer_address);
                     }
