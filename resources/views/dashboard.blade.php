@@ -80,28 +80,76 @@
             <div class="col-sm-12">
                 <div class="box box-info collapsed-box">
                     <div class="box-header with-border">
-                        <h3 class="box-title">TOP DRIVERS</h3>
-                        <a href="#" style="margin-left: 10px">
-                            <i class="fa fa-envelope-o" style="font-size: x-large;"></i>
-                            <span class="label label-success" data-widget="collapse" onclick="clickedNewOrders();">4</span>
-                        </a>
-
+                        <h3 class="box-title">Recent Orders</h3>
+                            @if(isset($recent_orders_count))
+                                @if($recent_orders_count>0)
+                                    <a style="margin-left: 10px" id="new_order_alert">
+                                        <i class="fa fa-envelope-o" style="font-size: x-large;"></i>
+                                        <span href="#" class="label label-success" data-widget="collapse" onclick="clickedNewOrders();" style="cursor: pointer;">{{$recent_orders_count}}</span>
+                                    </a>
+                                @else
+                                <a style="margin-left: 10px" id="new_order_alert">
+                                    <i class="fa fa-envelope-o" style="font-size: x-large;"></i>
+                                    <span href="#" class="label label-danger"  style="cursor: pointer;">No Recent Orders</span>
+                                </a>
+                                @endif
+                            @endif
                         <div class="box-tools pull-right" >
-
-                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-                            </button>
+                            @if(isset($recent_orders_count))
+                                @if($recent_orders_count>0)
+                                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                                    </button>
+                                @endif
+                            @endif
                             {{--<button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>--}}
                         </div>
                     </div>
                     <!-- /.box-header -->
-                    <div class="box-body">
-
+                    <div class="box-body" style="padding: 0px;">
+                        <table class="table no-margin" id="recent_orders_table">
+                            <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th style="width: 36px;">Order Code</th>
+                                <th>Customer</th>
+                                <th>Total</th>
+                                <th>Paid</th>
+                                <th>Balance</th>
+                                <th style="width: 56px;">Payment Status</th>
+                                <th style="width: 52px;">Delivery Status</th>
+                                <th>Delivered By</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach($recent_orders as $order)
+                                <tr>
+                                    <td>{{$order->order_date}}</td>
+                                    <td>{{$order->order_code}}</td>
+                                    <td>{{$order->customer_name}}</td>
+                                    <td>{{$order->full_amount}}</td>
+                                    <td>{{$order->paid_amount}}</td>
+                                    <td>{{$order->full_amount-$order->paid_amount}}</td>
+                                    @if($order->isPaid)
+                                        <td><span class="label label-success" style="font-size: small">Paid</span></td>
+                                    @else
+                                        <td><span class="label label-danger" style="font-size: small">Pending</span></td>
+                                    @endif
+                                    @if($order->isDelivered)
+                                        <td><span class="label label-success" style="font-size: small">Delivered</span></td>
+                                    @else
+                                        <td><span class="label label-danger" style="font-size: small">Pending</span></td>
+                                    @endif
+                                    <td>{{$order->vehicle_number}} : {{$order->driver_name}}</td>
+                                </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
                         <!-- /.table-responsive -->
                     </div>
                     <!-- /.box-body -->
                     <div class="box-footer clearfix">
                         {{-- <a href="javascript:void(0)" class="btn btn-sm btn-info btn-flat pull-left">Place New Order</a>--}}
-                        <a href="{{url('/drivers')}}" class="btn btn-sm btn-default btn-flat pull-right">View All Drivers</a>
+                        <a href="{{url('/viewRecentOrders')}}" class="btn btn-sm btn-default btn-flat pull-right">View All Recent Orders</a>
                     </div>
                     <!-- /.box-footer -->
                 </div>
@@ -254,8 +302,21 @@
 </div>
 <!-- /.box -->
 <script>
+
+    $(function () {
+        $('#recent_orders_table').DataTable({
+            "paging": true,
+            "lengthChange": false,
+            "searching": true,
+            "ordering": false,
+            "info": false,
+            "autoWidth": true
+        });
+    });
+
     function clickedNewOrders(){
-        console.log('seen by cashier');
+        $("#new_order_alert").hide();
     }
+
 </script>
 @endsection

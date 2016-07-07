@@ -83,7 +83,16 @@ class ViewController extends Controller
 
 			//get unseen orders for cashier
 			if(Session::get('role_id')==3){
-
+				$view->recent_orders = DB::table('orders')
+											->join('customers', 'customers.customer_id', '=', 'orders.customer_id')
+											->join('vehicles', 'orders.vehicle_id', '=', 'vehicles.vehicle_id')
+											->join('drivers', 'vehicles.driver_id', '=', 'drivers.driver_id')
+											->select('orders.*', 'customers.*','vehicles.vehicle_number','drivers.driver_name')
+											->where('orders.isSeenByCashier',0)
+											->orderBy('orders.order_date','desc')
+											->get();
+				$view->recent_orders_count = count($view->recent_orders);
+				//dd($view->recent_orders_count );
 			}
 
 			return $view;

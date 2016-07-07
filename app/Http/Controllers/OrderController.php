@@ -8,6 +8,7 @@ use App\Order;
 use App\Payment;
 use App\Product;
 use App\ProductsOnOrders;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -220,7 +221,94 @@ class OrderController extends Controller
         print_r(json_encode($product_orders));
     }
 
+    //view recent orders
+    public function viewRecentOrders(){
+        $view = View::make('allOrders');
+        $view->allOrders = DB::table('orders')
+            ->join('customers', 'customers.customer_id', '=', 'orders.customer_id')
+            ->join('vehicles', 'orders.vehicle_id', '=', 'vehicles.vehicle_id')
+            ->join('drivers', 'vehicles.driver_id', '=', 'drivers.driver_id')
+            ->select('orders.*', 'customers.*','vehicles.vehicle_number','drivers.driver_name')
+            ->where('orders.isSeenByCashier',0)
+            ->orderBy('orders.order_date','desc')
+            ->get();
 
+        DB::table('orders')
+            ->update(['isSeenByCashier' =>  1]);
+        //dd($view->allOrders);
+        return $view;
+    }
+    // driver tracking
+    public function driver_tracking(){
+
+        $view = View::make('driver_tracking');
+        $allOrders = DB::table('orders')
+                            ->join('customers', 'orders.customer_id', '=', 'customers.customer_id')
+                            ->join('vehicles', 'orders.vehicle_id', '=', 'vehicles.vehicle_id')
+                            ->join('drivers', 'vehicles.driver_id', '=', 'drivers.driver_id')
+                            ->join('products_on_order', 'orders.order_code', '=', 'products_on_order.order_code')
+                            ->select('orders.*','customers.customer_name','vehicles.*','drivers.*',DB::raw('count(products_on_order.qty) as num_product,SUM(products_on_order.qty) as total_qty'))
+                            ->groupBy('orders.order_code')
+                            ->where('orders.isDelivered',1)
+                            ->get();
+
+        $grouped_into_drivers = array();
+        foreach($allOrders as $driver_delivery){
+
+            if(array_key_exists($driver_delivery->driver_name, $grouped_into_drivers)){
+
+                array_push( $grouped_into_drivers[$driver_delivery->driver_name]["delivery_times"],Carbon::parse($driver_delivery->order_date)->diffInSeconds(Carbon::parse($driver_delivery->driver_returned_time)));
+                $seconds = ceil(array_sum($grouped_into_drivers[$driver_delivery->driver_name]["delivery_times"])/count($grouped_into_drivers[$driver_delivery->driver_name]["delivery_times"]));
+                $grouped_into_drivers[$driver_delivery->driver_name]["average_delivery_time_in_seconds"]=$seconds;
+                $grouped_into_drivers[$driver_delivery->driver_name]["average_delivery_time"]=(new \DateTime('@0'))->diff(new \DateTime("@$seconds"))->format('%a days, %h hours, %i minutes and %s seconds');
+
+                array_push($grouped_into_drivers[$driver_delivery->driver_name]["orders"],$driver_delivery);
+                $grouped_into_drivers[$driver_delivery->driver_name]["number_of_orders"]=count($grouped_into_drivers[$driver_delivery->driver_name]["orders"]);
+                $grouped_into_drivers[$driver_delivery->driver_name]["number_of_products_carried"]+=$driver_delivery->num_product;
+                $grouped_into_drivers[$driver_delivery->driver_name]["number_of_units_carried"]+=$driver_delivery->total_qty;
+            }else{
+                $grouped_into_drivers[$driver_delivery->driver_name]["orders"] = array();
+                $grouped_into_drivers[$driver_delivery->driver_name]["delivery_times"] = array();
+
+                array_push( $grouped_into_drivers[$driver_delivery->driver_name]["delivery_times"],Carbon::parse($driver_delivery->order_date)->diffInSeconds(Carbon::parse($driver_delivery->driver_returned_time)));
+                $seconds = ceil(array_sum($grouped_into_drivers[$driver_delivery->driver_name]["delivery_times"])/count($grouped_into_drivers[$driver_delivery->driver_name]["delivery_times"]));
+                $grouped_into_drivers[$driver_delivery->driver_name]["average_delivery_time_in_seconds"]=$seconds;
+                $grouped_into_drivers[$driver_delivery->driver_name]["average_delivery_time"]=(new \DateTime('@0'))->diff(new \DateTime("@$seconds"))->format('%a days, %h hours, %i minutes and %s seconds');
+
+
+                array_push($grouped_into_drivers[$driver_delivery->driver_name]["orders"],$driver_delivery);
+                $grouped_into_drivers[$driver_delivery->driver_name]["number_of_orders"]=count($grouped_into_drivers[$driver_delivery->driver_name]["orders"]);
+                $grouped_into_drivers[$driver_delivery->driver_name]["number_of_products_carried"]=$driver_delivery->num_product;
+                $grouped_into_drivers[$driver_delivery->driver_name]["number_of_units_carried"]=$driver_delivery->total_qty;
+                $grouped_into_drivers[$driver_delivery->driver_name]["driver_name"]=$driver_delivery->driver_name;
+            }
+
+        }
+       // dd($grouped_into_drivers);
+        usort($grouped_into_drivers, function($a, $b) {
+            return $b['number_of_orders'] - $a['number_of_orders'];
+        });
+
+        //based on highest number of deliveries
+        $view->sorted_by_highest_number_of_deliveries = $grouped_into_drivers;
+
+        usort($grouped_into_drivers, function($a, $b) {
+            return $b['number_of_units_carried'] - $a['number_of_units_carried'];
+        });
+
+        //based on highest number of products carried
+        $view->sorted_by_highest_number_of_units_carried = $grouped_into_drivers;
+
+        // most responsive drivers
+        usort($grouped_into_drivers, function($a, $b) {
+            return $a['average_delivery_time_in_seconds'] - $b['average_delivery_time_in_seconds'];
+        });
+        $view->most_responsive = $grouped_into_drivers;
+       // dd($view->most_responsive);
+        $view->index=0;
+        return $view;
+        //dd($view->sorted_by_highest_number_of_deliveries,$view->sorted_by_highest_number_of_units_carried);
+    }
 
 
 

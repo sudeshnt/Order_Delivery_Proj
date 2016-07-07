@@ -22,6 +22,7 @@ class CompanyController extends Controller
         if(Session::get('loggin_status')==true){
             $company=new Company();
             $company->company_name = Input::get('company_name');
+            $company->company_email = Input::get('company_email');
             $company->save();
             return Redirect::to('/companies');
         }else{

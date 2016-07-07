@@ -43,6 +43,10 @@
                                 <label for="comp_name">Company Name</label>
                                 <input type="text" class="form-control" name="company_name" id="comp_name" placeholder="Enter Company Name" required>
                             </div>
+                            <div class="form-group">
+                                <label for="comp_email">Company Email</label>
+                                <input type="email" class="form-control" name="company_email" id="company_email" placeholder="Enter Company Email" required>
+                            </div>
                         </div>
                         <!-- /.box-body -->
                         <div class="box-footer">

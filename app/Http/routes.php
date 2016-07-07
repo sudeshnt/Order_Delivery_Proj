@@ -98,6 +98,16 @@ Route::get('/viewOrder/{order_code}','OrderController@viewOrder');
 /*reset password*/
 Route::get('/resetPassword','UserController@resetPassword');
 
+/*view recent orders*/
+Route::get('/viewRecentOrders','OrderController@viewRecentOrders');
+
+/*update seen by cashier*/
+Route::get('/updateSeenByCashier','OrderController@updateSeenByCashier');
+
+/*driver_tracking*/
+Route::get('/driver_tracking','OrderController@driver_tracking');
+
+
 Route::get('/{any}', function () {
 	 return Redirect::to('/login');
 });

@@ -43,7 +43,6 @@
 											  <th>Name</th>
 											  <th>Business Name</th>
 											  <th>Address</th>
-											  <th>Zip</th>
 											  <th>Mobile</th>
 										  </tr>
 										  </thead>
@@ -55,7 +54,6 @@
 												  <td>{{$customer->customer_name}}</td>
 												  <td>{{$customer->business_name}}</td>
 												  <td>{{$customer->customer_address}}</td>
-												  <td>{{$customer->zip}}</td>
 												  <td>{{$customer->customer_mobile}}</td>
 											  </tr>
 										  @endforeach
