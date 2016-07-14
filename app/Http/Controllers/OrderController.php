@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\View;
 use Session;
 use Illuminate\Support\Facades\Redirect;
 
+
 class OrderController extends Controller
 {
     //place order
@@ -239,18 +240,57 @@ class OrderController extends Controller
         return $view;
     }
     // driver tracking
-    public function driver_tracking(){
+    public function driver_tracking($start_date,$end_date){
 
         $view = View::make('driver_tracking');
-        $allOrders = DB::table('orders')
-                            ->join('customers', 'orders.customer_id', '=', 'customers.customer_id')
-                            ->join('vehicles', 'orders.vehicle_id', '=', 'vehicles.vehicle_id')
-                            ->join('drivers', 'vehicles.driver_id', '=', 'drivers.driver_id')
-                            ->join('products_on_order', 'orders.order_code', '=', 'products_on_order.order_code')
-                            ->select('orders.*','customers.customer_name','vehicles.*','drivers.*',DB::raw('count(products_on_order.qty) as num_product,SUM(products_on_order.qty) as total_qty'))
-                            ->groupBy('orders.order_code')
-                            ->where('orders.isDelivered',1)
-                            ->get();
+        if($start_date=="then" && $end_date="now"){
+            $allOrders = DB::table('orders')
+                ->join('customers', 'orders.customer_id', '=', 'customers.customer_id')
+                ->join('vehicles', 'orders.vehicle_id', '=', 'vehicles.vehicle_id')
+                ->join('drivers', 'vehicles.driver_id', '=', 'drivers.driver_id')
+                ->join('products_on_order', 'orders.order_code', '=', 'products_on_order.order_code')
+                ->select('orders.*','customers.customer_name','vehicles.*','drivers.*',DB::raw('count(products_on_order.qty) as num_product,SUM(products_on_order.qty) as total_qty'))
+                ->groupBy('orders.order_code')
+                ->where('orders.isDelivered',1)
+                ->get();
+
+            $allOrdersNotDelivered = DB::table('orders')
+                ->join('customers', 'orders.customer_id', '=', 'customers.customer_id')
+                ->join('vehicles', 'orders.vehicle_id', '=', 'vehicles.vehicle_id')
+                ->join('drivers', 'vehicles.driver_id', '=', 'drivers.driver_id')
+                ->join('products_on_order', 'orders.order_code', '=', 'products_on_order.order_code')
+                ->select('orders.*','customers.customer_name','vehicles.*','drivers.*',DB::raw('count(products_on_order.qty) as num_product,SUM(products_on_order.qty) as total_qty'))
+                ->groupBy('orders.order_code')
+                ->where('orders.isDelivered',0)
+                ->get();
+        }
+        else{
+            $allOrders = DB::table('orders')
+                ->join('customers', 'orders.customer_id', '=', 'customers.customer_id')
+                ->join('vehicles', 'orders.vehicle_id', '=', 'vehicles.vehicle_id')
+                ->join('drivers', 'vehicles.driver_id', '=', 'drivers.driver_id')
+                ->join('products_on_order', 'orders.order_code', '=', 'products_on_order.order_code')
+                ->select('orders.*','customers.customer_name','vehicles.*','drivers.*',DB::raw('count(products_on_order.qty) as num_product,SUM(products_on_order.qty) as total_qty'))
+                ->groupBy('orders.order_code')
+                ->where('orders.isDelivered',1)
+                ->where('orders.delivered_at','>=',$start_date)
+                ->where('orders.delivered_at','<=',$end_date." 23:59:59")
+                ->get();
+
+            $allOrdersNotDelivered = DB::table('orders')
+                ->join('customers', 'orders.customer_id', '=', 'customers.customer_id')
+                ->join('vehicles', 'orders.vehicle_id', '=', 'vehicles.vehicle_id')
+                ->join('drivers', 'vehicles.driver_id', '=', 'drivers.driver_id')
+                ->join('products_on_order', 'orders.order_code', '=', 'products_on_order.order_code')
+                ->select('orders.*','customers.customer_name','vehicles.*','drivers.*',DB::raw('count(products_on_order.qty) as num_product,SUM(products_on_order.qty) as total_qty'))
+                ->groupBy('orders.order_code')
+                ->where('orders.isDelivered',0)
+                ->where('orders.delivered_at','>=',$start_date)
+                ->where('orders.delivered_at','<=',$end_date." 23:59:59")
+                ->get();
+            $view->filteredDate = date('m/d/Y', strtotime(str_replace('-', '/', $start_date)))." - ".date('m/d/Y', strtotime(str_replace('-', '/', $end_date)));
+        }
+
 
         $grouped_into_drivers = array();
         foreach($allOrders as $driver_delivery){
@@ -284,7 +324,6 @@ class OrderController extends Controller
             }
 
         }
-       // dd($grouped_into_drivers);
         usort($grouped_into_drivers, function($a, $b) {
             return $b['number_of_orders'] - $a['number_of_orders'];
         });
@@ -304,13 +343,53 @@ class OrderController extends Controller
             return $a['average_delivery_time_in_seconds'] - $b['average_delivery_time_in_seconds'];
         });
         $view->most_responsive = $grouped_into_drivers;
-       // dd($view->most_responsive);
         $view->index=0;
+
+        //for pending deliveries of each driver
+        $non_delivered_grouped_into_drivers = array();
+        foreach($allOrdersNotDelivered as $driver_pending_delivery){
+            if(array_key_exists($driver_pending_delivery->driver_name, $non_delivered_grouped_into_drivers)){
+                array_push( $non_delivered_grouped_into_drivers[$driver_pending_delivery->driver_name]["orders"],$driver_pending_delivery);
+                $non_delivered_grouped_into_drivers[$driver_pending_delivery->driver_name]["order_count"]=count($non_delivered_grouped_into_drivers[$driver_pending_delivery->driver_name]["orders"]);
+                $non_delivered_grouped_into_drivers[$driver_pending_delivery->driver_name]["driver_name"]=$driver_pending_delivery->driver_name;
+            }
+            else{
+                $non_delivered_grouped_into_drivers[$driver_pending_delivery->driver_name]["orders"] = array();
+                array_push( $non_delivered_grouped_into_drivers[$driver_pending_delivery->driver_name]["orders"],$driver_pending_delivery);
+                $non_delivered_grouped_into_drivers[$driver_pending_delivery->driver_name]["order_count"]=count($non_delivered_grouped_into_drivers[$driver_pending_delivery->driver_name]["orders"]);
+                $non_delivered_grouped_into_drivers[$driver_pending_delivery->driver_name]["driver_name"]=$driver_pending_delivery->driver_name;
+            }
+        }
+
+        usort($non_delivered_grouped_into_drivers, function($a, $b) {
+            return $b['order_count'] - $a['order_count'];
+        });
+
+        $view->pending_deliveries_grouped_by_driver = $non_delivered_grouped_into_drivers;
+        //dd($view->pending_deliveries_grouped_by_driver);
         return $view;
         //dd($view->sorted_by_highest_number_of_deliveries,$view->sorted_by_highest_number_of_units_carried);
     }
 
-
+    // view reports
+    function reports(){
+        $view = View::make('reports');
+        $allTodaySales = DB::table('orders')
+                    ->join('customers', 'orders.customer_id', '=', 'customers.customer_id')
+                    ->join('vehicles', 'orders.vehicle_id', '=', 'vehicles.vehicle_id')
+                    ->join('drivers', 'vehicles.driver_id', '=', 'drivers.driver_id')
+                    ->join('products_on_order', 'orders.order_code', '=', 'products_on_order.order_code')
+                    ->select('orders.*','customers.customer_name','vehicles.*','drivers.*',DB::raw('count(products_on_order.qty) as num_product,SUM(products_on_order.qty) as total_qty'))
+                    ->groupBy('orders.order_code')
+                    ->where('orders.order_date','>=',date("Y-m-d"))
+                    ->get();
+        $qty_of_products = array();
+        foreach($allTodaySales as $sale) {
+            $qty_of_products[$sale->order_code]=ProductsOnOrders::join('products','products_on_order.product_id', '=', 'products.product_id')->select('products.product_name','products_on_order.qty')->where('order_code',$sale->order_code)->get();
+        }
+        dd($qty_of_products);
+        return $view;
+    }
 
 
 }

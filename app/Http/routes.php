@@ -104,8 +104,11 @@ Route::get('/viewRecentOrders','OrderController@viewRecentOrders');
 /*update seen by cashier*/
 Route::get('/updateSeenByCashier','OrderController@updateSeenByCashier');
 
+/*view reports*/
+Route::get('/reports','OrderController@reports');
+
 /*driver_tracking*/
-Route::get('/driver_tracking','OrderController@driver_tracking');
+Route::get('/driver_tracking/{start_date}/{end_date}','OrderController@driver_tracking');
 
 
 Route::get('/{any}', function () {

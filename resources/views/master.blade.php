@@ -346,16 +346,22 @@
                         </ul>
                     </li>
 
-                    @if(Request::path()==='driver_tracking')
-                        <li class="active"><a href="{{url('driver_tracking')}}"><span>Driver Tracking</span></a></li>
+                    @if(Request::path()==='driver_tracking/then/now')
+                        <li class="active"><a href="{{url('driver_tracking/then/now')}}"><span>Driver Tracking</span></a></li>
                     @else
-                        <li><a href="{{url('driver_tracking')}}"><span>Driver Tracking</span></a></li>
+                        <li><a href="{{url('driver_tracking/then/now')}}"><span>Driver Tracking</span></a></li>
                     @endif
 
                     @if(Request::path()==='register')
                         <li class="active"><a href="{{url('register')}}"><span>Register Users</span></a></li>
                     @else
                         <li><a href="{{url('register')}}"><span>Register Users</span></a></li>
+                    @endif
+
+                    @if(Request::path()==='reports')
+                        <li class="active"><a href="{{url('reports')}}"><span>Reports</span></a></li>
+                    @else
+                        <li><a href="{{url('reports')}}"><span>Reports</span></a></li>
                     @endif
 
                 </ul><!-- /.sidebar-menu -->

@@ -113,10 +113,33 @@
     </div><!-- /.modal -->
 
     <div id="content" style="padding-top: 2%; background: white;">
+        {{--date range selector--}}
+        <div class="row" style="margin:15px;">
+            <div class="form-group col-md-4">
+                <label>Apply Date range:</label>
+                <div class="input-group">
+                    <div class="input-group-addon">
+                        <i class="fa fa-calendar"></i>
+                    </div>
+                    @if(isset($filteredDate))
+                         <input type="text" class="form-control pull-right" id="daterange" value="{{$filteredDate}}">
+                    @else
+                         <input type="text" class="form-control pull-right" id="daterange">
+                    @endif
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="row" style="margin-left: 0px; margin-top: 3px;">
+                    <button class="btn btn-success" style="margin-top: 22px;" onclick="filterDriverRecords();">Apply</button>
+                    <button class="btn btn-danger" style="margin-top: 22px;" onclick="clickedReset();">Reset</button>
+                </div>
+            </div>
+        </div>
         <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
             <li class="active"><a href="#most_responsive" data-toggle="tab">Most Responsive Drivers</a></li>
             <li><a href="#most_deliveries" data-toggle="tab">Drivers with Most Deliveries</a></li>
             <li><a href="#most_units" data-toggle="tab">Drivers with Most Delivery Units</a></li>
+            <li><a href="#pending_deliveries" data-toggle="tab" style="color: #ff2845;">Pending Deliveries</a></li>
             {{--<li><a href="#green" data-toggle="tab">Green</a></li>
             <li><a href="#blue" data-toggle="tab">Blue</a></li>--}}
         </ul>
@@ -330,6 +353,69 @@
                     @endforeach
                 </div>
             </div>
+            <div class="tab-pane" id="pending_deliveries">
+              <div class="row">
+                @foreach ($pending_deliveries_grouped_by_driver as $driver)
+                    <div class="panel-group" id="accordion">
+
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{++$index}}">{{$driver["driver_name"]}}<br> <small style="color: #ff2845">number of pending deliveries : {{$driver["order_count"]}}</small></a>
+                                </h4>
+                            </div>
+                            <div id="collapse{{$index}}" class="panel-collapse collapse">
+
+                                <div class="panel-body">
+                                    <table id="example{{$index}}"  class="table table-bordered table-hover allTables">
+                                        <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th style="width: 80px;">Order Code</th>
+                                            <th>Customer</th>
+                                            <th>Total</th>
+                                            <th>Paid</th>
+                                            <th>Balance</th>
+                                            <th style="width: 56px;">Payment Status</th>
+
+                                            <th></th>
+                                        </tr>
+                                        </thead>
+
+                                        <tbody>
+                                        @foreach ($driver["orders"] as $order)
+                                            <tr>
+                                                <td>{{$order->order_date}}</td>
+                                                <td>{{$order->order_code}}</td>
+                                                <td>{{$order->customer_name}}</td>
+                                                <td>{{$order->full_amount}}</td>
+                                                <td>{{$order->paid_amount}}</td>
+                                                <td>{{$order->full_amount-$order->paid_amount}}</td>
+                                                @if($order->isPaid)
+                                                    <td><span class="label label-success" style="font-size: small">Paid</span></td>
+                                                @else
+                                                    <td><span class="label label-danger" style="font-size: small">Pending</span></td>
+                                                @endif
+                                                {{--@if($order->isDelivered)
+                                                    <td><span class="label label-success" style="font-size: small">Delivered</span></td>
+                                                @else
+                                                    <td><span class="label label-danger" style="font-size: small">Pending</span></td>
+                                                @endif--}}
+
+
+                                                <td style="text-align: center;" onclick="showCustomerOrders('{{$order->order_code}}');"><i class="fa fa-eye fa-2x" aria-hidden="true"></i></td>
+                                            </tr>
+                                        @endforeach
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
             {{--<div class="tab-pane" id="green">
                 <h1>Green</h1>
                 <p>green green green green green</p>
@@ -342,6 +428,9 @@
     </div>
 
     <script>
+
+        $('#daterange').daterangepicker();
+
         function showCustomerOrders(order_code){
             //getOrderDetails(data.order_code);
             $.ajax({
@@ -375,5 +464,22 @@
                 }
             });
         }
+
+        //filter driver records
+        function filterDriverRecords(){
+            var startDate = $('#daterange').data('daterangepicker').startDate.format('YYYY-MM-DD');
+            var endDate = $('#daterange').data('daterangepicker').endDate.format('YYYY-MM-DD');
+            if(startDate!=endDate){
+                console.log($('#daterange').data('daterangepicker'));
+                window.location="{{URL::to('driver_tracking')}}"+"/"+startDate+"/"+endDate;
+            }else{
+
+            }
+        }
+        //reset daterange
+        function clickedReset() {
+            document.getElementById('daterange').innerHTML='';
+            window.location="{{URL::to('driver_tracking')}}"+"/then/now";
+        };
     </script>
 @endsection
