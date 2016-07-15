@@ -372,22 +372,70 @@ class OrderController extends Controller
     }
 
     // view reports
-    function reports(){
+    function reports($option){
         $view = View::make('reports');
-        $allTodaySales = DB::table('orders')
+
+        if($option == 'daily'){
+            $date = date("Y-m-d");
+            $view->option = "Today's";
+        }else if($option == 'monthly'){
+            $date = date("Y-m-01");
+            $view->option = 'Monthly';
+        }
+
+
+        //get all orders made within range
+        $view->allOrders = DB::table('orders')
                     ->join('customers', 'orders.customer_id', '=', 'customers.customer_id')
                     ->join('vehicles', 'orders.vehicle_id', '=', 'vehicles.vehicle_id')
                     ->join('drivers', 'vehicles.driver_id', '=', 'drivers.driver_id')
                     ->join('products_on_order', 'orders.order_code', '=', 'products_on_order.order_code')
                     ->select('orders.*','customers.customer_name','vehicles.*','drivers.*',DB::raw('count(products_on_order.qty) as num_product,SUM(products_on_order.qty) as total_qty'))
                     ->groupBy('orders.order_code')
-                    ->where('orders.order_date','>=',date("Y-m-d"))
+                    ->where('orders.order_date','>=',$date)
                     ->get();
-        $qty_of_products = array();
-        foreach($allTodaySales as $sale) {
-            $qty_of_products[$sale->order_code]=ProductsOnOrders::join('products','products_on_order.product_id', '=', 'products.product_id')->select('products.product_name','products_on_order.qty')->where('order_code',$sale->order_code)->get();
+        // get all deliveries daily or monthly
+        $view->allDeliveries = DB::table('orders')
+                    ->join('customers', 'orders.customer_id', '=', 'customers.customer_id')
+                    ->join('vehicles', 'orders.vehicle_id', '=', 'vehicles.vehicle_id')
+                    ->join('drivers', 'vehicles.driver_id', '=', 'drivers.driver_id')
+                    ->join('products_on_order', 'orders.order_code', '=', 'products_on_order.order_code')
+                    ->select('orders.order_date','orders.order_code','orders.whoReceived','customers.customer_name','vehicles.vehicle_number','drivers.*',DB::raw('count(products_on_order.qty) as num_product,SUM(products_on_order.qty) as total_qty'))
+                    ->groupBy('orders.order_code')
+                    ->where('orders.delivered_at','>=',$date)
+                    ->get();
+        // sales wise , products wise , income wise reports
+
+        $order_code_list = array();
+        $view->total_sales = 0;
+        $view->total_settled = 0;
+        foreach($view->allOrders as $sale) {
+            array_push($order_code_list,$sale->order_code);
+            $view->total_sales+=$sale->full_amount;
+            $view->total_settled+=$sale->paid_amount;
         }
-        dd($qty_of_products);
+        $view->total_due_payments = $view->total_sales-$view->total_settled;
+
+        $order_products=ProductsOnOrders::join('products','products_on_order.product_id', '=', 'products.product_id')->select('products.product_name','products_on_order.qty')->whereIn('order_code',$order_code_list)->get();
+        $view->qty_of_products = array();
+        $view->total_units_sold=0;
+        foreach($order_products as $products_on_order) {
+            if(array_key_exists($products_on_order->product_name, $view->qty_of_products)){
+                $view->qty_of_products["$products_on_order->product_name"]+=$products_on_order->qty;
+                $view->total_units_sold+=$products_on_order->qty;
+            }else{
+                $view->qty_of_products["$products_on_order->product_name"]=$products_on_order->qty;
+                $view->total_units_sold+=$products_on_order->qty;
+            }
+        }
+
+        // getting payment reports
+        $view->payment_reports = Payment::where('payment_date','>=',$date)->get();
+        $view->total_income = 0;
+        foreach($view->payment_reports as $payment) {
+            $view->total_income+=$payment->amount;
+        }
+
         return $view;
     }
 

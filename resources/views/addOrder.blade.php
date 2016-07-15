@@ -36,7 +36,7 @@
                                     <div class="input-group">
                                         <label for="order_id">Order ID</label>
                                         <div class='input-group'>
-                                            <input type="text" class="form-control" name="order_id" id="order_id"  required />
+                                            <input type="text" class="form-control" name="order_id" id="order_id"  required/>
                                                 <span class="input-group-addon">
                                                         <span class="glyphicon glyphicon-random" onclick="javascript:setOrderId();"></span>
                                                     </span>
@@ -277,28 +277,43 @@
 
     //place order
     function placeOrder(){
-        $.ajax({
-            url: "{{ url('/placeOrder') }}",
-            type: "get",
-            data:{products_on_order:products_on_order,
-                  order_date:document.getElementById("order_date").value,
-                  order_code:document.getElementById("order_id").value,
-                  customer_id:document.getElementById("customer_id").value,
-                  vehicle_id:document.getElementById("vehicles").value,
-                  full_amount:total_amount},
-            dataType: 'json',
-            async:true,
-            success: function(data){
-                window.location="{{URL::to('/invoice')}}/"+data;
-            },
-            error: function(data)
-            {
-                console.log("error");
+        console.log(products_on_order.length);
+        if(document.getElementById("vehicles").value=='Select Vehicle' || document.getElementById("order_id").value=='' || products_on_order.length==0 || document.getElementById("customer_id").value=='Choose a Customer'){
+            if(document.getElementById("order_id").value==''){
+                alertify.error('Generate an Order Code');
+            }else if(document.getElementById("customer_id").value=='Choose a Customer'){
+                alertify.error('Select a Customer');
+            }else if(products_on_order.length==0){
+                alertify.error('You have no Products Selected for the Order');
+            }else{
+                alertify.error('Assign a Vehicle for the Order');
             }
-        });
+        }else{
+            alertify.confirm('Are You Sure You Want to Place the Order?', function(){
+                $.ajax({
+                    url: "{{ url('/placeOrder') }}",
+                    type: "get",
+                    data:{products_on_order:products_on_order,
+                        order_date:document.getElementById("order_date").value,
+                        order_code:document.getElementById("order_id").value,
+                        customer_id:document.getElementById("customer_id").value,
+                        vehicle_id:document.getElementById("vehicles").value,
+                        full_amount:total_amount},
+                    dataType: 'json',
+                    async:true,
+                    success: function(data){
+                        window.location="{{URL::to('/invoice')}}/"+data;
+                    },
+                    error: function(data)
+                    {
+                        console.log("error");
+                    }
+                });
+            });
+        }
     }
 
-    //when customer is changed available behicles for that customer zone
+    //when customer is changed available vehicles for that customer zone
     //will be selected and loaded to the vehicle select drop down
     function customerSelected(customer_id){
         $.ajax({
@@ -307,9 +322,13 @@
             dataType: 'json',
             async:true,
             success: function(data){
-                //console.log(data);
+                console.log(data);
                 var select = document.getElementById("vehicles");
-                /*select.innerHTML = '<option selected></option>';*/
+                select.innerHTML = '';
+                var opt = document.createElement("option");
+                opt.value = 'Select Vehicle';
+                opt.textContent = 'Select Vehicle' ;
+                select.appendChild(opt);
                 for(vehicle of data)
                 {
                     console.log(vehicle);

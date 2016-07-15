@@ -62,7 +62,7 @@ Route::get('/allOrders','OrderController@getAllOrders');
 /*view damaged orders*/
 Route::get('/damagedProducts','ViewController@damagedProducts');
 
-/*submit payment*/
+/*get customer zone vehicles*/
 Route::get('/getCustomerZoneVehicles/{customer_id}','VehicleController@getCustomerZoneVehicles');
 
 /*get payments for a order*/
@@ -105,7 +105,7 @@ Route::get('/viewRecentOrders','OrderController@viewRecentOrders');
 Route::get('/updateSeenByCashier','OrderController@updateSeenByCashier');
 
 /*view reports*/
-Route::get('/reports','OrderController@reports');
+Route::get('/reports/{option}','OrderController@reports');
 
 /*driver_tracking*/
 Route::get('/driver_tracking/{start_date}/{end_date}','OrderController@driver_tracking');

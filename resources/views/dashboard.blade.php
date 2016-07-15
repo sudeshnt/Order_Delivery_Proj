@@ -298,6 +298,47 @@
                 <!-- /.box-footer -->
             </div>
         </div>
+        <div class="col-md-5" style="padding: 0px">
+            <div class="box box-info">
+                <div class="box-header with-border">
+                    <h3 class="box-title">PRODUCTS SOLD</h3>
+
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                        </button>
+                        {{--<button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>--}}
+                    </div>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <div class="table-responsive">
+                        <table id="products_table"  class="table no-margin">
+                            <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Qty</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach ($qty_of_products as $key => $value)
+                                <tr>
+                                    <td>{{$key}}</td>
+                                    <td>{{$value}}</td>
+                                </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.table-responsive -->
+                </div>
+                <!-- /.box-body -->
+                <div class="box-footer clearfix">
+                    {{-- <a href="javascript:void(0)" class="btn btn-sm btn-info btn-flat pull-left">Place New Order</a>--}}
+                    <a href="{{url('/products')}}" class="btn btn-sm btn-default btn-flat pull-right">View All Products</a>
+                </div>
+                <!-- /.box-footer -->
+            </div>
+        </div>
     </div>
 </div>
 <!-- /.box -->

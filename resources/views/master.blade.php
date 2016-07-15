@@ -291,11 +291,11 @@
                             @else
                                 <li><a href="{{url('notDeliveredOrders')}}">Orders Not Delivered</a></li>
                             @endif
-                            @if(Request::path()==='returnedProducts')
+                            {{--@if(Request::path()==='returnedProducts')
                                 <li class="active"><a href="{{url('returnedProducts')}}">Returned Products</a></li>
                             @else
                                 <li><a href="{{url('returnedProducts')}}">Returned Products</a></li>
-                            @endif
+                            @endif--}}
                         </ul>
                     </li>
 
@@ -358,11 +358,26 @@
                         <li><a href="{{url('register')}}"><span>Register Users</span></a></li>
                     @endif
 
-                    @if(Request::path()==='reports')
-                        <li class="active"><a href="{{url('reports')}}"><span>Reports</span></a></li>
+
+                    @if(Request::path()=='reports/daily' || Request::path()=='reports/monthly')
+                        <li class="treeview active">
                     @else
-                        <li><a href="{{url('reports')}}"><span>Reports</span></a></li>
-                    @endif
+                        <li class="treeview">
+                            @endif
+                            <a><span>Reports</span> <i class="fa fa-angle-left pull-right"></i></a>
+                            <ul class="treeview-menu">
+                                @if(Request::path()==='reports/daily')
+                                    <li class="active"><a href="{{url('reports/daily')}}">Daily Reports</a></li>
+                                @else
+                                    <li><a href="{{url('reports/daily')}}">Daily Reports</a></li>
+                                @endif
+                                @if(Request::path()==='reports/monthly')
+                                    <li class="active"><a href="{{url('reports/monthly')}}">Monthly Reports</a></li>
+                                @else
+                                    <li><a href="{{url('reports/monthly')}}">Monthly Reports</a></li>
+                                @endif
+                            </ul>
+                        </li>
 
                 </ul><!-- /.sidebar-menu -->
             </section>

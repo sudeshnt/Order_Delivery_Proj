@@ -7,6 +7,7 @@ use App\Customer;
 use App\DamagedProduct;
 use App\Order;
 use App\Product;
+use App\ProductsOnOrders;
 use App\Vehicle;
 use DateTime;
 use Illuminate\Http\Request;
@@ -94,6 +95,26 @@ class ViewController extends Controller
 				$view->recent_orders_count = count($view->recent_orders);
 				//dd($view->recent_orders_count );
 			}
+
+			//getting units sold from each product
+			$order_code_list = array();
+			$order_codes = Order::select('order_code')->get();
+			foreach($order_codes as $order_code) {
+				array_push($order_code_list,$order_code->order_code);
+			}
+			$order_products=ProductsOnOrders::join('products','products_on_order.product_id', '=', 'products.product_id')->select('products.product_name','products_on_order.qty')->whereIn('order_code',$order_code_list)->get();
+			$view->qty_of_products = array();
+			$view->total_units_sold=0;
+			foreach($order_products as $products_on_order) {
+				if(array_key_exists($products_on_order->product_name, $view->qty_of_products)){
+					$view->qty_of_products["$products_on_order->product_name"]+=$products_on_order->qty;
+					$view->total_units_sold+=$products_on_order->qty;
+				}else{
+					$view->qty_of_products["$products_on_order->product_name"]=$products_on_order->qty;
+					$view->total_units_sold+=$products_on_order->qty;
+				}
+			}
+			//dd($view->qty_of_products);
 
 			return $view;
 		}else{

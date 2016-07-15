@@ -386,7 +386,11 @@
 
     <script>
         $('.modal').on('hidden.bs.modal', function (e) {
-            location.reload();
+            selects = document.getElementsByName('option');
+            for(select of selects){
+
+            }
+            //location.reload();
         });
 
 

@@ -73,9 +73,10 @@ class UserController extends Controller
         } else {
             // attempt to do the login
         	$user = User::where('username',Input::get('username'))->first();
-			$role = Role::where('role_id',$user->role_id)->first();
+
         	//user exists
 	        	if($user!=null){
+					$role = Role::where('role_id',$user->role_id)->first();
 	        		//login successful
 	        		if(Crypt::decrypt($user->password) == Input::get('password')){
 	        			Session::put('users_id', $user->user_id);
