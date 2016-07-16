@@ -376,6 +376,11 @@
                                 @else
                                     <li><a href="{{url('reports/monthly')}}">Monthly Reports</a></li>
                                 @endif
+                                @if(Request::path()==='reports/custom')
+                                    <li class="active"><a href="{{url('reports/custom')}}">Custom Reports</a></li>
+                                @else
+                                    <li><a href="{{url('reports/custom')}}">Custom Reports</a></li>
+                                @endif
                             </ul>
                         </li>
 

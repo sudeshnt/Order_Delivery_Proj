@@ -49,7 +49,7 @@
 					  @foreach ($allCustomers as $customer)
 						  <tr>
 							  @if($customer->isOwed==true)
-								  <td>{{$customer->customer_name}}<i class="fa fa-usd  fa-lg" aria-hidden="true" style="float: right; color: rgba(253, 49, 49, 0.81)"></i> </td>
+								  <td>{{$customer->customer_name}}<i aria-hidden="true" style="float: right; color: rgba(253, 49, 49, 0.81); font-size: x-large;font-weight: 900;">₦</i> </td>
 							  @else
 								  <td>{{$customer->customer_name}}</td>
 							  @endif
@@ -199,7 +199,7 @@
 					}
 					HTML+='Order Value : ₦ '+data[order].full_amount+'<br>'+'Paid Amount : ₦ '+data[order].paid_amount+'<br>';
 					if(data[order].isPaid==0)
-						HTML+='<p style="color: #FD3131;">Due Payment : ₦ '+(data[order].full_amount-data[order].paid_amount)+'</p>';
+						HTML+='<p style="color: #FD3131;">Due Payment :(total_owe).toFixed(2) '+(data[order].full_amount-data[order].paid_amount)+'</p>';
 
 
 					HTML+='</div>'+
@@ -209,7 +209,7 @@
 					total_owe += data[order].full_amount - data[order].paid_amount;
 				}
 				document.getElementById("customer_orders_holder").innerHTML =HTML;
-				document.getElementById("total_owe").innerHTML = "Customers Due Payment : " + total_owe;
+				document.getElementById("total_owe").innerHTML = "Customer's Total Due Payment : ₦ " + (total_owe).toFixed(2) ;
 				$('#orders_modal').modal('show');
 			},
 			error: function(data)

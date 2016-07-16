@@ -45,9 +45,9 @@
                     <td>{{$order->order_date}}</td>
                     <td>{{$order->order_code}}</td>
                     <td>{{$order->customer_name}}</td>
-                    <td>{{$order->full_amount}}</td>
-                    <td>{{$order->paid_amount}}</td>
-                    <td>{{$order->full_amount-$order->paid_amount}}</td>
+                    <td>₦ {{$order->full_amount}}</td>
+                    <td>₦ {{$order->paid_amount}}</td>
+                    <td>₦ {{$order->full_amount-$order->paid_amount}}</td>
                     @if($order->isPaid)
                         <td><span class="label label-success" style="font-size: small">Paid</span></td>
                     @else
@@ -250,7 +250,7 @@
                                     <div class="form-group">
                                         <label for="whoRecieved">Received Person Name</label>
                                         <div class='input-group' style="width: 100%;">
-                                            <input type='text' class="form-control"  name='whoReceived' id='whoReceived'/>
+                                            <input type='text' class="form-control"  name='whoReceived' id='whoReceived' required/>
                                         </div>
                                     </div>
 
@@ -500,11 +500,11 @@
                                 document.getElementById("order_code").innerHTML = '<b>Order Id : </b>'+data[0].order_code;
                                 document.getElementById("order_date").innerHTML = '<b>Order Date : </b>'+data[0].order_date;
 
-                                document.getElementById("full_amount").innerHTML = data[0].full_amount;
+                                document.getElementById("full_amount").innerHTML = '₦ '+data[0].full_amount;
                                 var table_content='';
                                 for(product of data[1]){
                                     console.log(product);
-                                    table_content+='<tr><td>'+product.product_code+'</td><td>'+product.product_name+'</td><td>'+product.qty+'</td><td>'+product.unit_price+'</td><td>'+(product.qty*product.unit_price).toFixed(2)+'</td></tr>';
+                                    table_content+='<tr><td>'+product.product_code+'</td><td>'+product.product_name+'</td><td>'+product.qty+'</td><td>₦ '+product.unit_price+'</td><td>₦ '+(product.qty*product.unit_price).toFixed(2)+'</td></tr>';
                                 }
                                 document.getElementById("products_table_content").innerHTML = table_content;
                                 $('#myModal').modal('show');

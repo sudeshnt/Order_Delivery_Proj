@@ -22,7 +22,7 @@
                         <div class="row">
                             <div class='col-sm-4'>
                                 <div class="form-group">
-                                    <label for="order_date">Order ID</label>
+                                    <label for="order_date">Order Date</label>
                                     <div class='input-group date'>
                                         <input type='text' class="form-control"  name='order_date' id='order_date'/>
                                             <span class="input-group-addon">

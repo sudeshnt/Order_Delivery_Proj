@@ -188,7 +188,7 @@
                                     <td>{{$customer->customer_name}}</td>
                                     <td>{{$customer->email}}</td>
                                     <td>{{$customer->customer_mobile}}</td>
-                                    <td style="float: right;;"><span class="label label-danger" style="font-size: small;">{{$customer->total_owe}}</span></td>
+                                    <td style="float: right;;"><span class="label label-danger" style="font-size: small;">₦ {{$customer->total_owe}}</span></td>
                                 </tr>
                             @endforeach
                             </tbody>

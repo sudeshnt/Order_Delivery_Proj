@@ -41,7 +41,7 @@
                                 <td>{{$product->product_code}}</td>
                                 <td>{{$product->company_name}}</td>
                                 <td>{{$product->available_amount}}</td>
-                                <td>{{$product->unit_price}}</td>
+                                <td>₦ {{$product->unit_price}}</td>
                                 <td>{{$product->product_size}}</td>
                                 <td style="text-align: center;" onclick="showProductOrders('{{$product->product_id}}');"><i class="fa fa-eye fa-2x" aria-hidden="true"></i></td>
                             </tr>

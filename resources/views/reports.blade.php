@@ -1,7 +1,34 @@
 @extends('master')
 
 @section('content')
-
+    @if(Request::path()==='reports/custom')
+        <div class="row" style="margin:0px; padding:1%;">
+            {{--date rage for filtering orders--}}
+            <div class="form-group col-md-6">
+                <div id="product_id_div" hidden></div>
+                <label>Apply Date range:</label>
+                <div class="input-group">
+                    <div class="input-group-addon">
+                        <i class="fa fa-calendar"></i>
+                    </div>
+                    <input type="text" class="form-control pull-right" id="reservation">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="row" style="margin-top: 3px;">
+                    <button class="btn btn-success" style="margin-top: 22px;" onclick="function filterReports() {
+                                                 window.location='{{URL::to('reports')}}/'+$('#reservation').data('daterangepicker').startDate.format('YYYY-MM-DD')+','+$('#reservation').data('daterangepicker').endDate.format('YYYY-MM-DD');
+                                            }
+                                            filterReports();">Apply</button>
+                    <button class="btn btn-danger" style="margin-top: 22px;" onclick="function clickedReset() {
+                                                document.getElementById('reservation').innerHTML='';
+                                                /*showProductOrders(document.getElementById('product_id_div').innerHTML);*/
+                                            }
+                                            clickedReset();">Reset</button>
+                </div>
+            </div>
+        </div>
+    @endif
     <div style="padding: 1%;">
         <div class="col-md-4 col-sm-6 col-xs-12">
             <div class="info-box">
@@ -242,5 +269,6 @@
             });
         });
 
+        $('#reservation').daterangepicker();
     </script>
 @endsection

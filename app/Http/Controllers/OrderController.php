@@ -373,16 +373,24 @@ class OrderController extends Controller
 
     // view reports
     function reports($option){
+
         $view = View::make('reports');
 
         if($option == 'daily'){
-            $date = date("Y-m-d");
+            $startdate = date("Y-m-d");
+            $enddate = date("Y-m-d H:i:s");
             $view->option = "Today's";
-        }else if($option == 'monthly'){
-            $date = date("Y-m-01");
+        }else if($option == 'monthly' || $option=='custom'){
+            $startdate = date("Y-m-01");
+            $enddate = date("Y-m-d H:i:s");
             $view->option = 'Monthly';
-        }
 
+        }else{
+            $dates = explode(",", $option);
+            $startdate=$dates[0];
+            $enddate=$dates[1];
+            $view->option = 'Custom';
+        }
 
         //get all orders made within range
         $view->allOrders = DB::table('orders')
@@ -392,7 +400,8 @@ class OrderController extends Controller
                     ->join('products_on_order', 'orders.order_code', '=', 'products_on_order.order_code')
                     ->select('orders.*','customers.customer_name','vehicles.*','drivers.*',DB::raw('count(products_on_order.qty) as num_product,SUM(products_on_order.qty) as total_qty'))
                     ->groupBy('orders.order_code')
-                    ->where('orders.order_date','>=',$date)
+                    ->where('orders.order_date','>=',$startdate)
+                    ->where('orders.order_date','<=',$enddate)
                     ->get();
         // get all deliveries daily or monthly
         $view->allDeliveries = DB::table('orders')
@@ -402,7 +411,8 @@ class OrderController extends Controller
                     ->join('products_on_order', 'orders.order_code', '=', 'products_on_order.order_code')
                     ->select('orders.order_date','orders.order_code','orders.whoReceived','customers.customer_name','vehicles.vehicle_number','drivers.*',DB::raw('count(products_on_order.qty) as num_product,SUM(products_on_order.qty) as total_qty'))
                     ->groupBy('orders.order_code')
-                    ->where('orders.delivered_at','>=',$date)
+                    ->where('orders.delivered_at','>=',$startdate)
+                    ->where('orders.delivered_at','<=',$enddate)
                     ->get();
         // sales wise , products wise , income wise reports
 
@@ -430,7 +440,7 @@ class OrderController extends Controller
         }
 
         // getting payment reports
-        $view->payment_reports = Payment::where('payment_date','>=',$date)->get();
+        $view->payment_reports = Payment::where('payment_date','>=',$startdate)->where('payment_date','<=',$enddate)->get();
         $view->total_income = 0;
         foreach($view->payment_reports as $payment) {
             $view->total_income+=$payment->amount;
