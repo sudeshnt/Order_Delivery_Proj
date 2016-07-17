@@ -228,7 +228,7 @@
                     var product_name='';
                     for(order of data){
                         //console.log(order);
-                        table_content+='<tr><td>'+order.order_date+'</td><td>'+order.customer_name+'</td><td>'+(order.available_amount+order.qty)+'</td><td>'+order.available_amount+'</td><td>'+order.qty+'</tr>';
+                        table_content+='<tr><td>'+order.order_date+'</td><td>'+order.customer_name+'</td><td>'+(parseInt(order.available_amount)+parseInt(order.qty))+'</td><td>'+order.available_amount+'</td><td>'+order.qty+'</tr>';
                         product_name = order.product_name;
                     }
                     table_content+= '</tbody>'+

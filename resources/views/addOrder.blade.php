@@ -7,7 +7,11 @@
             margin:-2%;
         }
     </style>
-
+    <section class="content-header">
+        <h1>
+            Add Order
+        </h1>
+    </section>
 <div class="panel">
     {{--<form role="form" method="post" action="{{ url('/addOrder') }}">--}}
         <input type="hidden" name="_token" value="{{ csrf_token() }}">

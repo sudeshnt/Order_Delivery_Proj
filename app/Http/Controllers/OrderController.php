@@ -102,6 +102,7 @@ class OrderController extends Controller
             ->select('orders.*', 'customers.*','vehicles.vehicle_number','drivers.driver_name')
             ->orderBy('orders.order_date','desc')
             ->get();
+        $view->option='';
         //dd($view->allOrders);
         return $view;
     }
@@ -389,7 +390,8 @@ class OrderController extends Controller
             $dates = explode(",", $option);
             $startdate=$dates[0];
             $enddate=$dates[1];
-            $view->option = 'Custom';
+            $view->option = 'Filtered';
+            $view->filteredDate = date('m/d/Y', strtotime(str_replace('-', '/', $startdate)))." - ".date('m/d/Y', strtotime(str_replace('-', '/', $enddate)));
         }
 
         //get all orders made within range

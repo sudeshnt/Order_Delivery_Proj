@@ -1,19 +1,25 @@
 @extends('master')
 
 @section('content')
-    @if(Request::path()==='reports/custom')
+    @if(Request::path()==='reports/custom' || isset($filteredDate))
         <div class="row" style="margin:0px; padding:1%;">
             {{--date rage for filtering orders--}}
             <div class="form-group col-md-6">
-                <div id="product_id_div" hidden></div>
                 <label>Apply Date range:</label>
                 <div class="input-group">
                     <div class="input-group-addon">
                         <i class="fa fa-calendar"></i>
                     </div>
-                    <input type="text" class="form-control pull-right" id="reservation">
+                    @if(isset($filteredDate))
+                        <input type="text" class="form-control pull-right" id="reservation" value="{{$filteredDate}}">
+                    @else
+                        <input type="text" class="form-control pull-right" id="reservation">
+                    @endif
                 </div>
             </div>
+
+
+
             <div class="col-md-4">
                 <div class="row" style="margin-top: 3px;">
                     <button class="btn btn-success" style="margin-top: 22px;" onclick="function filterReports() {
@@ -21,8 +27,7 @@
                                             }
                                             filterReports();">Apply</button>
                     <button class="btn btn-danger" style="margin-top: 22px;" onclick="function clickedReset() {
-                                                document.getElementById('reservation').innerHTML='';
-                                                /*showProductOrders(document.getElementById('product_id_div').innerHTML);*/
+                                                    window.location='{{URL::to('reports/custom')}}';
                                             }
                                             clickedReset();">Reset</button>
                 </div>

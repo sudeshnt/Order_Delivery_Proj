@@ -362,6 +362,7 @@ class ViewController extends Controller
 			->where('orders.isDelivered',1)
 			->orderBy('orders.order_date','desc')
 			->get();
+		$view->option = "Delivered ";
 		//dd($view->allOrders);
 		return $view;
 	}
@@ -377,6 +378,7 @@ class ViewController extends Controller
 			->where('orders.isDelivered',0)
 			->orderBy('orders.order_date','desc')
 			->get();
+		$view->option='Not Delivered ';
 		//dd($view->allOrders);
 		return $view;
 	}

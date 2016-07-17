@@ -18,9 +18,38 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>
-            All Orders
+            All {{$option}}Orders
         </h1>
     </section>
+    <div class="row" style="margin:0px; padding:1%;">
+        {{--date rage for filtering orders--}}
+        <div class="form-group col-md-4">
+            <label>Apply Date range:</label>
+            <div class="input-group">
+                <div class="input-group-addon">
+                    <i class="fa fa-calendar"></i>
+                </div>
+                @if(isset($filteredDate))
+                    <input type="text" class="form-control pull-right" id="reservation" value="{{$filteredDate}}">
+                @else
+                    <input type="text" class="form-control pull-right" id="reservation">
+                @endif
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="row" style="margin-top: 3px;">
+                <button class="btn btn-success" style="margin-top: 22px;" onclick="function filterReports() {
+                        window.location='{{URL::to('reports')}}/'+$('#reservation').data('daterangepicker').startDate.format('YYYY-MM-DD')+','+$('#reservation').data('daterangepicker').endDate.format('YYYY-MM-DD');
+                        }
+                        filterReports();">Apply</button>
+                <button class="btn btn-danger" style="margin-top: 22px;" onclick="function clickedReset() {
+                        window.location='{{URL::to('reports/custom')}}';
+                        }
+                        clickedReset();">Reset</button>
+            </div>
+        </div>
+    </div>
 
     <div class="panel">
         {{--customer table--}}
@@ -390,9 +419,7 @@
             for(select of selects){
 
             }
-            //location.reload();
         });
-
 
         $('#delivery_date').datetimepicker({
             defaultDate: new Date(),
@@ -522,6 +549,9 @@
                 }
             });
 
+
         }
+
+        $('#reservation').daterangepicker();
     </script>
 @endsection
