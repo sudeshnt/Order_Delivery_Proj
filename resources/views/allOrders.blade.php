@@ -36,83 +36,140 @@
                 @endif
             </div>
         </div>
-
         <div class="col-md-4">
             <div class="row" style="margin-top: 3px;">
-                <button class="btn btn-success" style="margin-top: 22px;" onclick="function filterReports() {
-                        window.location='{{URL::to('reports')}}/'+$('#reservation').data('daterangepicker').startDate.format('YYYY-MM-DD')+','+$('#reservation').data('daterangepicker').endDate.format('YYYY-MM-DD');
+                <button class="btn btn-success" style="margin-top: 22px;" onclick="function filterOrders() {
+                            window.location='{{URL::to('allOrders/')}}/'+$('#reservation').data('daterangepicker').startDate.format('YYYY-MM-DD')+','+$('#reservation').data('daterangepicker').endDate.format('YYYY-MM-DD')+'/'+$('.nav-tabs .active > a').attr('id');
                         }
-                        filterReports();">Apply</button>
+                        filterOrders();">Apply</button>
                 <button class="btn btn-danger" style="margin-top: 22px;" onclick="function clickedReset() {
-                        window.location='{{URL::to('reports/custom')}}';
+                             window.location='{{URL::to('allOrders/all')}}'/+$('.nav-tabs .active > a').attr('id');
                         }
                         clickedReset();">Reset</button>
             </div>
         </div>
     </div>
-
-    <div class="panel">
-        {{--customer table--}}
-        <table id="orders_table"  class="table table-bordered table-hover allTables">
-            <thead>
-            <tr>
-                <th>Date</th>
-                <th style="width: 36px;">Order Code</th>
-                <th>Customer</th>
-                <th>Total</th>
-                <th>Paid</th>
-                <th>Balance</th>
-                <th style="width: 56px;">Payment Status</th>
-                <th style="width: 52px;">Delivery Status</th>
-                <th>Delivered By</th>
-                <th style="width:102px;">Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            @foreach ($allOrders as $order)
-               <tr{{-- onclick="getOrderDetails('{{$order->order_code}}')"--}}>
-                    <td>{{$order->order_date}}</td>
-                    <td>{{$order->order_code}}</td>
-                    <td>{{$order->customer_name}}</td>
-                    <td>₦ {{$order->full_amount}}</td>
-                    <td>₦ {{$order->paid_amount}}</td>
-                    <td>₦ {{$order->full_amount-$order->paid_amount}}</td>
-                    @if($order->isPaid)
-                        <td><span class="label label-success" style="font-size: small">Paid</span></td>
-                    @else
-                        <td><span class="label label-danger" style="font-size: small">Pending</span></td>
+    <div class="">
+        <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+                @if(isset($active_tab))
+                    @if($active_tab=='tab1')
+                        <li class="active"><a href="#tab_1" data-toggle="tab" id="tab1">All {{$option}} Orders</a></li>
+                        <li><a href="#tab_2" data-toggle="tab" id="tab2">All {{$option}} Products</a></li>
+                    @elseif($active_tab=='tab2')
+                        <li><a href="#tab_1" data-toggle="tab" id="tab1">All {{$option}} Orders</a></li>
+                        <li class="active"><a href="#tab_2" data-toggle="tab" id="tab2">All {{$option}} Products</a></li>
                     @endif
-                   @if($order->isDelivered)
-                       <td><span class="label label-success" style="font-size: small">Delivered</span></td>
-                   @else
-                       <td><span class="label label-danger" style="font-size: small">Pending</span></td>
-                   @endif
-                   <td>{{$order->vehicle_number}} : {{$order->driver_name}}</td>
-                    <td>
-                        <select class="form-control" name="option" style="width: 100%;" onchange="ActionSelected(this.value,'{{$order->order_code}}');">
-                                <option selected>Select Action</option>
-                                <option value="view_order"> View Order</option>
-                                @if($order->isDelivered==0)
-                                <option value="delivery">Add Delivery</option>
+                @else
+                    <li class="active"><a href="#tab_1" data-toggle="tab" id="tab1">All {{$option}} Orders</a></li>
+                    <li><a href="#tab_2" data-toggle="tab" id="tab2">All {{$option}} Products</a></li>
+                @endif
+            </ul>
+            <div class="tab-content" style="padding: 0px;">
+                @if(isset($active_tab))
+                    @if($active_tab=='tab1')
+                        <div class="tab-pane active" id="tab_1">
+                    @else
+                        <div class="tab-pane" id="tab_1">
+                    @endif
+                @endif
+                    {{--customer table--}}
+                    <table id="orders_table"  class="table table-bordered table-hover allTables">
+                        <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th style="width: 36px;">Order Code</th>
+                            <th>Customer</th>
+                            <th>Total</th>
+                            <th>Paid</th>
+                            <th>Balance</th>
+                            <th style="width: 56px;">Payment Status</th>
+                            <th style="width: 52px;">Delivery Status</th>
+                            <th>Delivered By</th>
+                            <th style="width:102px;">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach ($allOrders as $order)
+                            <tr{{-- onclick="getOrderDetails('{{$order->order_code}}')"--}}>
+                                <td>{{$order->order_date}}</td>
+                                <td>{{$order->order_code}}</td>
+                                <td>{{$order->customer_name}}</td>
+                                <td>₦ {{$order->full_amount}}</td>
+                                <td>₦ {{$order->paid_amount}}</td>
+                                <td>₦ {{$order->full_amount-$order->paid_amount}}</td>
+                                @if($order->isPaid)
+                                    <td><span class="label label-success" style="font-size: small">Paid</span></td>
                                 @else
-                                <option value="delivery" disabled>Add Delivery</option>
+                                    <td><span class="label label-danger" style="font-size: small">Pending</span></td>
                                 @endif
-                                @if(Session::get('role')=='Admin' || Session::get('role')== 'Cashier')
-                                    @if($order->isPaid==0)
-                                        <option value="payment">Add Payment</option>
-                                    @else
-                                        <option value="payment" disabled>Add Payment</option>
-                                    @endif
+                                @if($order->isDelivered)
+                                    <td><span class="label label-success" style="font-size: small">Delivered</span></td>
+                                @else
+                                    <td><span class="label label-danger" style="font-size: small">Pending</span></td>
                                 @endif
-                                <option value="view_payments">View Payments</option>
-                        </select>
-                    </td>
+                                <td>{{$order->vehicle_number}} : {{$order->driver_name}}</td>
+                                <td>
+                                    <select class="form-control" name="option" style="width: 100%;" onchange="ActionSelected(this.value,'{{$order->order_code}}');">
+                                        <option selected>Select Action</option>
+                                        <option value="view_order"> View Order</option>
+                                         @if(Session::get('role_id')!=3)
+                                            @if($order->isDelivered==0)
+                                                <option value="delivery">Add Delivery</option>
+                                            @else
+                                                <option value="delivery" disabled>Add Delivery</option>
+                                            @endif
+                                        @endif
+                                        @if(Session::get('role')=='Admin' || Session::get('role')== 'Cashier')
+                                            @if($order->isPaid==0)
+                                                <option value="payment">Add Payment</option>
+                                            @else
+                                                <option value="payment" disabled>Add Payment</option>
+                                            @endif
+                                        @endif
+                                        <option value="view_payments">View Payments</option>
+                                    </select>
+                                </td>
 
-               </tr>
-            @endforeach
-            </tbody>
-        </table>
-    </div>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                @if(isset($active_tab))
+                    @if($active_tab=='tab2')
+                        <div class="tab-pane active" id="tab_2">
+                    @else
+                        <div class="tab-pane" id="tab_2">
+                    @endif
+                @endif
+                    <div >
+                        <table id="products_on_order_table"  class="table table-bordered table-hover allTables">
+                            <thead>
+                            <tr>
+                                <th>Order Date</th>
+                                <th>Order Code</th>
+                                <th>Product Name</th>
+                                <th>Qty</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach ($products_on_order as $product_order)
+                                <tr>
+                                    <td>{{$product_order->order_date}}</td>
+                                    <td>{{$product_order->order_code}}</td>
+                                    <td>{{$product_order->product_name}}</td>
+                                    <td>{{$product_order->qty}}</td>
+                                </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+         </div>
+     </div>
+
 
     {{--View Modal--}}
     <div class="modal fade" tabindex="-1" role="dialog" id="myModal">
@@ -447,6 +504,18 @@
             });
         });
 
+        $(function () {
+            $('#products_on_order_table').DataTable({
+                "paging": true,
+                "lengthChange": false,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false
+            });
+        });
+
+
         function getOrderDetails(order_code){
             $('#myModal').modal('show');
             $.ajax({
@@ -496,10 +565,10 @@
                                 var total_paid = 0;
                                 for(payments of data){
                                     console.log(payments);
-                                    table_content+='<tr><td>'+String("000000" + payments.payment_id).slice(-6)+'</td><td>'+payments.payment_date+'</td><td>'+payments.amount+'</td></tr>';
+                                    table_content+='<tr><td>'+String("000000" + payments.payment_id).slice(-6)+'</td><td>'+payments.payment_date+'</td><td> ₦ '+payments.amount+'</td></tr>';
                                     total_paid+=payments.amount;
                                 }
-                                table_content+='<tr><td></td><td>Total Paid</td><td>'+total_paid+' ₦</td></tr>'
+                                table_content+='<tr><td></td><td>Total Paid</td><td> ₦ '+total_paid+'</td></tr>'
                                 table_content+='</tbody></table>';
                                 document.getElementById("payments_table_div").innerHTML =table_content;
                             },

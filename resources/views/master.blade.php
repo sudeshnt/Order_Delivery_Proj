@@ -264,32 +264,34 @@
                         <li><a href="{{url('drivers')}}"><span>Drivers</span></a></li>
                     @endif
 
-                    @if(Request::path()=='addOrder' || Request::path()=='allOrders' || Request::path()=='deliverdOrders' || Request::path()=='notDeliveredOrders' || Request::path()=='returnedProducts')
+                    @if(Request::path()=='addOrder' || Request::path()=='allOrders/all' || Request::path()=='deliverdOrders' || Request::path()=='notDeliveredOrders' || Request::path()=='returnedProducts')
                         <li class="treeview active">
                     @else
                         <li class="treeview">
                     @endif
                         <a ><span>Sales</span> <i class="fa fa-angle-left pull-right"></i></a>
                         <ul class="treeview-menu">
-                            @if(Request::path()==='addOrder')
-                                <li class="active"><a href="{{url('addOrder')}}">Add Order</a></li>
-                            @else
-                                <li><a href="{{url('addOrder')}}">Add Order</a></li>
+                            @if(Session::get('role_id')!=3)
+                                @if(Request::path()==='addOrder')
+                                    <li class="active"><a href="{{url('addOrder')}}">Add Order</a></li>
+                                @else
+                                    <li><a href="{{url('addOrder')}}">Add Order</a></li>
+                                @endif
                             @endif
-                            @if(Request::path()==='allOrders')
-                                <li class="active"><a href="{{url('allOrders')}}">All Order</a></li>
+                            @if(Request::path()==='allOrders/all/tab1')
+                                <li class="active"><a href="{{url('allOrders/all/tab1')}}">All Orders</a></li>
                             @else
-                                <li><a href="{{url('allOrders')}}">All Order</a></li>
+                                <li><a href="{{url('allOrders/all/tab1')}}">All Orders</a></li>
                             @endif
-                            @if(Request::path()==='deliverdOrders')
-                                <li class="active"><a href="{{url('deliverdOrders')}}">Delivered Orders</a></li>
+                            @if(Request::path()==='deliverdOrders/all/tab1')
+                                <li class="active"><a href="{{url('deliverdOrders/all/tab1')}}">Delivered Orders</a></li>
                             @else
-                                <li><a href="{{url('deliverdOrders')}}">Delivered Orders</a></li>
+                                <li><a href="{{url('deliverdOrders/all/tab1')}}">Delivered Orders</a></li>
                             @endif
-                            @if(Request::path()==='notDeliveredOrders')
-                                <li class="active"><a href="{{url('notDeliveredOrders')}}">Orders Not Delivered</a></li>
+                            @if(Request::path()==='notDeliveredOrders/all/tab1')
+                                <li class="active"><a href="{{url('notDeliveredOrders/all/tab1')}}">Orders Not Delivered</a></li>
                             @else
-                                <li><a href="{{url('notDeliveredOrders')}}">Orders Not Delivered</a></li>
+                                <li><a href="{{url('notDeliveredOrders/all/tab1')}}">Orders Not Delivered</a></li>
                             @endif
                             {{--@if(Request::path()==='returnedProducts')
                                 <li class="active"><a href="{{url('returnedProducts')}}">Returned Products</a></li>
@@ -351,13 +353,13 @@
                     @else
                         <li><a href="{{url('driver_tracking/then/now')}}"><span>Driver Tracking</span></a></li>
                     @endif
-
-                    @if(Request::path()==='register')
-                        <li class="active"><a href="{{url('register')}}"><span>Register Users</span></a></li>
-                    @else
-                        <li><a href="{{url('register')}}"><span>Register Users</span></a></li>
-                    @endif
-
+                     @if(Session::get('role_id')==1)
+                        @if(Request::path()==='register')
+                            <li class="active"><a href="{{url('register')}}"><span>Register Users</span></a></li>
+                        @else
+                            <li><a href="{{url('register')}}"><span>Register Users</span></a></li>
+                        @endif
+                     @endif
 
                     @if(Request::path()=='reports/daily' || Request::path()=='reports/monthly')
                         <li class="treeview active">

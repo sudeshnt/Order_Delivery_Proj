@@ -89,7 +89,7 @@
                                         </div>
                                     </div>
                                 <div class="form-group">
-                                    <label for="product_amount">Added Amount</label>
+                                    <label for="product_amount">Added Quantity</label>
                                     <input type="number" class="form-control" name="product_amount" id="product_amount" placeholder="Enter Amount" required>
                                 </div>
                                 <div class="form-group">

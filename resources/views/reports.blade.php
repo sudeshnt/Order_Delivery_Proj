@@ -41,9 +41,9 @@
 
                 <div class="info-box-content">
                     <span class="info-box-text">Value of Total Sales</span>
-                    <span class="info-box-number">{{$total_sales}} <small> ₦</small></span>
-                    <span class="info-box-number"><small style="color: #00a65a;">Total Settiled  {{$total_settled}} ₦</small></span>
-                    <span class="info-box-number"><small style="color: #dd4b39;">Total Due  {{$total_due_payments}} ₦</small></span>
+                    <span class="info-box-number"><small>₦ </small> {{$total_sales}} </span>
+                    <span class="info-box-number"><small style="color: #00a65a;">Total Paid  ₦ {{$total_settled}}</small></span>
+                    <span class="info-box-number"><small style="color: #dd4b39;">Total Due ₦ {{$total_due_payments}}</small></span>
                 </div>
                 <!-- /.info-box-content -->
             </div>
@@ -56,7 +56,7 @@
 
                 <div class="info-box-content">
                     <span class="info-box-text">Total Payments Recieved</span>
-                    <span class="info-box-number">{{$total_income}} ₦</span>
+                    <span class="info-box-number"> ₦ {{$total_income}}</span>
                 </div>
                 <!-- /.info-box-content -->
             </div>
@@ -114,9 +114,9 @@
                         <td>{{$order->order_date}}</td>
                         <td>{{$order->order_code}}</td>
                         <td>{{$order->customer_name}}</td>
-                        <td>{{$order->full_amount}}</td>
-                        <td>{{$order->paid_amount}}</td>
-                        <td>{{$order->full_amount-$order->paid_amount}}</td>
+                        <td>₦ {{$order->full_amount}}</td>
+                        <td>₦ {{$order->paid_amount}}</td>
+                        <td>₦ {{$order->full_amount-$order->paid_amount}}</td>
                         @if($order->isPaid)
                             <td><span class="label label-success" style="font-size: small">Paid</span></td>
                         @else
@@ -183,7 +183,7 @@
                         <tr>
                             <td>{{$payment->payment_id}}</td>
                             <td>{{$payment->payment_date}}</td>
-                            <td>{{$payment->amount}}</td>
+                            <td>₦ {{$payment->amount}}</td>
                         </tr>
                     @endforeach
                     </tbody>

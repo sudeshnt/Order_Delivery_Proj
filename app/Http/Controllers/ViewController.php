@@ -98,11 +98,16 @@ class ViewController extends Controller
 
 			//getting units sold from each product
 			$order_code_list = array();
-			$order_codes = Order::select('order_code')->get();
+			$order_codes = Order::select('order_code')
+					->where('order_date','>=',date("Y-m-d"))
+					->get();
 			foreach($order_codes as $order_code) {
 				array_push($order_code_list,$order_code->order_code);
 			}
-			$order_products=ProductsOnOrders::join('products','products_on_order.product_id', '=', 'products.product_id')->select('products.product_name','products_on_order.qty')->whereIn('order_code',$order_code_list)->get();
+			$order_products=ProductsOnOrders::join('products','products_on_order.product_id', '=', 'products.product_id')
+											->select('products.product_name','products_on_order.qty')
+											->whereIn('order_code',$order_code_list)
+											->get();
 			$view->qty_of_products = array();
 			$view->total_units_sold=0;
 			foreach($order_products as $products_on_order) {
@@ -114,6 +119,7 @@ class ViewController extends Controller
 					$view->total_units_sold+=$products_on_order->qty;
 				}
 			}
+			arsort($view->qty_of_products);
 			//dd($view->qty_of_products);
 
 			return $view;
@@ -350,36 +356,5 @@ class ViewController extends Controller
 			return Redirect::to('/login');
 		}
 	}
-
-	// get Deliverd Orders
-	public function getDeliverdOrders(){
-		$view = View::make('allOrders');
-		$view->allOrders = DB::table('orders')
-			->join('customers', 'customers.customer_id', '=', 'orders.customer_id')
-			->join('vehicles', 'orders.vehicle_id', '=', 'vehicles.vehicle_id')
-			->join('drivers', 'vehicles.driver_id', '=', 'drivers.driver_id')
-			->select('orders.*', 'customers.*','vehicles.vehicle_number','drivers.driver_name')
-			->where('orders.isDelivered',1)
-			->orderBy('orders.order_date','desc')
-			->get();
-		$view->option = "Delivered ";
-		//dd($view->allOrders);
-		return $view;
-	}
-
-	//get Not Delivered Orders
-	public function getNotDeliveredOrders(){
-		$view = View::make('allOrders');
-		$view->allOrders = DB::table('orders')
-			->join('customers', 'customers.customer_id', '=', 'orders.customer_id')
-			->join('vehicles', 'orders.vehicle_id', '=', 'vehicles.vehicle_id')
-			->join('drivers', 'vehicles.driver_id', '=', 'drivers.driver_id')
-			->select('orders.*', 'customers.*','vehicles.vehicle_number','drivers.driver_name')
-			->where('orders.isDelivered',0)
-			->orderBy('orders.order_date','desc')
-			->get();
-		$view->option='Not Delivered ';
-		//dd($view->allOrders);
-		return $view;
-	}
+	
 }

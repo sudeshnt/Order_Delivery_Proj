@@ -93,19 +93,104 @@ class OrderController extends Controller
     }
 
     /*get all orders*/
-    public function getAllOrders(){
+    /**
+     * @param $option
+     * @return mixed
+     */
+    function getProductOnOrder($order_codes){
+        $order_products=ProductsOnOrders::join('products','products_on_order.product_id', '=', 'products.product_id')
+            ->join('orders','products_on_order.order_code', '=', 'orders.order_code')
+            ->select('orders.order_date','orders.order_code','products.product_name','products_on_order.qty')
+            ->whereIn('products_on_order.order_code',$order_codes)
+            ->get();
+        return $order_products ;
+    }
+
+    public function getAllOrders($option,$active_tab){
+        $view = View::make('allOrders');
+        if($option=='all'){
+            $view->allOrders = DB::table('orders')
+                ->join('customers', 'customers.customer_id', '=', 'orders.customer_id')
+                ->join('vehicles', 'orders.vehicle_id', '=', 'vehicles.vehicle_id')
+                ->join('drivers', 'vehicles.driver_id', '=', 'drivers.driver_id')
+                ->select('orders.*', 'customers.*','vehicles.vehicle_number','drivers.driver_name')
+                ->orderBy('orders.order_date','desc')
+                ->get();
+            $view->option='';
+        }else{
+            $dates = explode(",", $option);
+            $startdate=$dates[0];
+            $enddate=$dates[1];
+            $view->allOrders = DB::table('orders')
+                ->join('customers', 'customers.customer_id', '=', 'orders.customer_id')
+                ->join('vehicles', 'orders.vehicle_id', '=', 'vehicles.vehicle_id')
+                ->join('drivers', 'vehicles.driver_id', '=', 'drivers.driver_id')
+                ->select('orders.*', 'customers.*','vehicles.vehicle_number','drivers.driver_name')
+                ->orderBy('orders.order_date','desc')
+                ->where('orders.order_date','>=',$startdate)
+                ->where('orders.order_date','<=',$enddate)
+                ->get();
+            $view->option='Filtered ';
+            $view->filteredDate = date('m/d/Y', strtotime(str_replace('-', '/', $startdate)))." - ".date('m/d/Y', strtotime(str_replace('-', '/', $enddate)));
+        }
+        if($view->allOrders != ''){
+            $order_code_list = array();
+            foreach($view->allOrders as $sale) {
+                array_push($order_code_list,$sale->order_code);
+            }
+            $view->products_on_order=$this->getProductOnOrder($order_code_list);
+        }
+        $view->active_tab=$active_tab;
+        return $view;
+    }
+
+    // get Deliverd Orders
+    public function getDeliverdOrders($option,$active_tab){
         $view = View::make('allOrders');
         $view->allOrders = DB::table('orders')
             ->join('customers', 'customers.customer_id', '=', 'orders.customer_id')
             ->join('vehicles', 'orders.vehicle_id', '=', 'vehicles.vehicle_id')
             ->join('drivers', 'vehicles.driver_id', '=', 'drivers.driver_id')
             ->select('orders.*', 'customers.*','vehicles.vehicle_number','drivers.driver_name')
+            ->where('orders.isDelivered',1)
             ->orderBy('orders.order_date','desc')
             ->get();
-        $view->option='';
+        if($view->allOrders != ''){
+            $order_code_list = array();
+            foreach($view->allOrders as $sale) {
+                array_push($order_code_list,$sale->order_code);
+            }
+            $view->products_on_order=$this->getProductOnOrder($order_code_list);
+        }
+        $view->option = "Delivered ";
         //dd($view->allOrders);
         return $view;
     }
+
+    //get Not Delivered Orders
+    public function getNotDeliveredOrders($option,$active_tab){
+        $view = View::make('allOrders');
+        $view->allOrders = DB::table('orders')
+            ->join('customers', 'customers.customer_id', '=', 'orders.customer_id')
+            ->join('vehicles', 'orders.vehicle_id', '=', 'vehicles.vehicle_id')
+            ->join('drivers', 'vehicles.driver_id', '=', 'drivers.driver_id')
+            ->select('orders.*', 'customers.*','vehicles.vehicle_number','drivers.driver_name')
+            ->where('orders.isDelivered',0)
+            ->orderBy('orders.order_date','desc')
+            ->get();
+        if($view->allOrders != ''){
+            $order_code_list = array();
+            foreach($view->allOrders as $sale) {
+                array_push($order_code_list,$sale->order_code);
+            }
+            $view->products_on_order=$this->getProductOnOrder($order_code_list);
+        }
+        $view->option='Not Delivered ';
+        //dd($view->allOrders);
+        return $view;
+    }
+
+
 
     /*get order by order_code*/
     public function getOrderDetails($order_code){

@@ -33,15 +33,17 @@
                                     </address>
                                 </div>
                                 <!-- /.col -->
-                                <div class="col-sm-2 invoice-col">
+                                <div class="col-sm-1 invoice-col">
 
                                 </div>
                                 <!-- /.col -->
-                                <div class="col-sm-5 invoice-col" style="padding: 0px;">
-                                    <br>
+                                <div class="col-sm-6 invoice-col" style="padding: 0px;">
                                     <br>
                                     <div id="order_code"></div>
                                     <div id="order_date"></div>
+                                    <div id="delivered_at"></div>
+                                    <div id="reported_at"></div>
+                                    <div id="received_by"></div>
                                 </div>
                                 <!-- /.col -->
                             </div>
@@ -162,32 +164,35 @@
                                         <table id="example{{$index}}"  class="table table-bordered table-hover allTables">
                                             <thead>
                                             <tr>
-                                                <th>Date</th>
+                                                <th>Order Date</th>
+                                                <th>Delivered at</th>
+                                                <th>Driver Reported at</th>
+                                                <th>Received By</th>
                                                 <th style="width: 36px;">Order Code</th>
                                                 <th>Customer</th>
                                                 <th>Total</th>
                                                 <th>Paid</th>
                                                 <th>Balance</th>
                                                 <th style="width: 56px;">Payment Status</th>
-                                                {{--<th style="width: 52px;">Delivery Status</th>--}}
-                                                <th>Delivered at</th>
-                                                <th>Received By</th>
-                                                <th>Driver Reported at</th>
                                                 <th>Total Time</th>
                                                 <th></th>
                                             </tr>
                                             </thead>
 
                                             <tbody>
-                                            {{$time_index=0}}
+                                            <?php $time_index=0;?>
                                             @foreach ($driver["orders"] as $order)
                                                 <tr>
+
                                                     <td>{{$order->order_date}}</td>
+                                                    <td>{{$order->delivered_at}}</td>
+                                                    <td>{{$order->driver_returned_time}}</td>
+                                                    <td>{{$order->whoReceived}}</td>
                                                     <td>{{$order->order_code}}</td>
                                                     <td>{{$order->customer_name}}</td>
-                                                    <td>{{$order->full_amount}}</td>
-                                                    <td>{{$order->paid_amount}}</td>
-                                                    <td>{{$order->full_amount-$order->paid_amount}}</td>
+                                                    <td>₦ {{$order->full_amount}}</td>
+                                                    <td>₦ {{$order->paid_amount}}</td>
+                                                    <td>₦ {{$order->full_amount-$order->paid_amount}}</td>
                                                     @if($order->isPaid)
                                                         <td><span class="label label-success" style="font-size: small">Paid</span></td>
                                                     @else
@@ -198,14 +203,12 @@
                                                     @else
                                                         <td><span class="label label-danger" style="font-size: small">Pending</span></td>
                                                     @endif--}}
-                                                    <td>{{$order->delivered_at}}</td>
-                                                    <td>{{$order->whoReceived}}</td>
-                                                    <td>{{$order->driver_returned_time}}</td>
-                                                    {{$seconds=$driver["delivery_times"][$time_index]}}
+                                                    <?php $seconds=$driver["delivery_times"][$time_index]; ?>
                                                     <td>{{ (new \DateTime('@0'))->diff(new \DateTime("@$seconds"))->format('%a days, %h hours, %i minutes and %s seconds')}}</td>
                                                     <td style="text-align: center;" onclick="showCustomerOrders('{{$order->order_code}}');"><i class="fa fa-eye fa-2x" aria-hidden="true"></i></td>
+
                                                 </tr>
-                                                {{$time_index++}}
+                                                <?php $time_index++; ?>
                                             @endforeach
                                             </tbody>
                                         </table>
@@ -235,7 +238,10 @@
                                     <table id="example{{$index}}"  class="table table-bordered table-hover allTables">
                                         <thead>
                                             <tr>
-                                                <th>Date</th>
+                                                <th>Order Date</th>
+                                                <th>Delivered at</th>
+                                                <th>Driver Reported at</th>
+                                                <th>Received By</th>
                                                 <th style="width: 36px;">Order Code</th>
                                                 <th>Customer</th>
                                                 <th>Total</th>
@@ -243,9 +249,6 @@
                                                 <th>Balance</th>
                                                 <th style="width: 56px;">Payment Status</th>
                                                 {{--<th style="width: 52px;">Delivery Status</th>--}}
-                                                <th>Delivered at</th>
-                                                <th>Received By</th>
-                                                <th>Driver Reported at</th>
                                                 <th></th>
                                             </tr>
                                         </thead>
@@ -254,6 +257,9 @@
                                         @foreach ($driver["orders"] as $order)
                                             <tr>
                                                 <td>{{$order->order_date}}</td>
+                                                <td>{{$order->delivered_at}}</td>
+                                                <td>{{$order->driver_returned_time}}</td>
+                                                <td>{{$order->whoReceived}}</td>
                                                 <td>{{$order->order_code}}</td>
                                                 <td>{{$order->customer_name}}</td>
                                                 <td>{{$order->full_amount}}</td>
@@ -269,9 +275,6 @@
                                                 @else
                                                     <td><span class="label label-danger" style="font-size: small">Pending</span></td>
                                                 @endif--}}
-                                                <td>{{$order->delivered_at}}</td>
-                                                <td>{{$order->whoReceived}}</td>
-                                                <td>{{$order->driver_returned_time}}</td>
                                                 <td style="text-align: center;" onclick="showCustomerOrders('{{$order->order_code}}');"><i class="fa fa-eye fa-2x" aria-hidden="true"></i></td>
                                             </tr>
                                         @endforeach
@@ -303,17 +306,18 @@
                                         <table id="example{{$index}}"  class="table table-bordered table-hover allTables">
                                             <thead>
                                             <tr>
-                                                <th>Date</th>
+                                                <th>Order Date</th>
+                                                <th>Delivered at</th>
+                                                <th>Driver Reported at</th>
+                                                <th>Received By</th>
                                                 <th style="width: 36px;">Order Code</th>
                                                 <th>Customer</th>
                                                 <th>Total</th>
                                                 <th>Paid</th>
                                                 <th>Balance</th>
                                                 <th style="width: 56px;">Payment Status</th>
-                                                <th style="width: 52px;">Delivery Status</th>
-                                                {{--<th>Delivered at</th>--}}
-                                                <th>Received By</th>
-                                                <th>Driver Reported at</th>
+                                                <th style="width: 52px;"></th>
+                                                {{----}}
                                                 <th></th>
                                             </tr>
                                             </thead>
@@ -322,6 +326,9 @@
                                             @foreach ($driver["orders"] as $order)
                                                 <tr>
                                                     <td>{{$order->order_date}}</td>
+                                                    <td>{{$order->delivered_at}}</td>
+                                                    <td>{{$order->driver_returned_time}}</td>
+                                                    <td>{{$order->whoReceived}}</td>
                                                     <td>{{$order->order_code}}</td>
                                                     <td>{{$order->customer_name}}</td>
                                                     <td>{{$order->full_amount}}</td>
@@ -337,9 +344,9 @@
                                                     @else
                                                         <td><span class="label label-danger" style="font-size: small">Pending</span></td>
                                                     @endif--}}
-                                                    <td>{{$order->delivered_at}}</td>
-                                                    <td>{{$order->whoReceived}}</td>
-                                                    <td>{{$order->driver_returned_time}}</td>
+
+
+
                                                     <td style="text-align: center;" onclick="showCustomerOrders('{{$order->order_code}}');"><i class="fa fa-eye fa-2x" aria-hidden="true"></i></td>
                                                 </tr>
                                             @endforeach
@@ -449,12 +456,19 @@
                     document.getElementById("order_code").innerHTML = '<b>Order Id : </b>'+data[0].order_code;
                     document.getElementById("order_date").innerHTML = '<b>Order Date : </b>'+data[0].order_date;
 
-                    document.getElementById("full_amount").innerHTML = data[0].full_amount;
+                    document.getElementById("delivered_at").innerHTML = '<b>Delivered at : </b>'+data[0].delivered_at;
+                    document.getElementById("reported_at").innerHTML = '<b>Driver Reported at : </b>'+data[0].driver_returned_time;
+                    document.getElementById("received_by").innerHTML = '<b>Order Received By : </b>'+data[0].whoReceived;
+
+                    document.getElementById("full_amount").innerHTML = '₦ '+data[0].full_amount;
                     var table_content='';
+                    var total_units = 0;
                     for(product of data[1]){
                         console.log(product);
-                        table_content+='<tr><td>'+product.product_code+'</td><td>'+product.product_name+'</td><td>'+product.qty+'</td><td>'+product.unit_price+'</td><td>'+(product.qty*product.unit_price).toFixed(2)+'</td></tr>';
+                        table_content+='<tr><td>'+product.product_code+'</td><td>'+product.product_name+'</td><td>'+product.qty+'</td><td>₦ '+product.unit_price+'</td><td>₦ '+(product.qty*product.unit_price).toFixed(2)+'</td></tr>';
+                        total_units+=product.qty;
                     }
+                    table_content+='<tr><td></td><td style="text-align: right;">Total Units : </td><td>'+total_units+'</td><td></td><td></td></tr>'
                     document.getElementById("products_table_content").innerHTML = table_content;
                     $('#myModal').modal('show');
                 },

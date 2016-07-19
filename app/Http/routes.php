@@ -57,7 +57,13 @@ Route::get('/doLogout','UserController@doLogout');
 Route::get('/invoice/{order_code}','OrderController@generateInvoice');
 
 /*view all orders*/
-Route::get('/allOrders','OrderController@getAllOrders');
+Route::get('/allOrders/{option}/{active_tab}','OrderController@getAllOrders');
+
+/*get delivered Orders*/
+Route::get('/deliverdOrders/{option}/{active_tab}','OrderController@getDeliverdOrders');
+
+/*get not yet delivered Orders*/
+Route::get('/notDeliveredOrders/{option}/{active_tab}','OrderController@getNotDeliveredOrders');
 
 /*view damaged orders*/
 Route::get('/damagedProducts','ViewController@damagedProducts');
@@ -85,12 +91,6 @@ Route::get('/addNewDamagedProducts','ProductController@addNewDamagedProducts');
 
 /*get Customer Orders*/
 Route::get('/getCustomerOrders/{customer}','OrderController@getCustomerOrders');
-
-/*get delivered Orders*/
-Route::get('/deliverdOrders','ViewController@getDeliverdOrders');
-
-/*get not yet delivered Orders*/
-Route::get('/notDeliveredOrders','ViewController@getNotDeliveredOrders');
 
 /*get details for view Orders*/
 Route::get('/viewOrder/{order_code}','OrderController@viewOrder');
