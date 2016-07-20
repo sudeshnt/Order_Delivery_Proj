@@ -72,7 +72,14 @@
                 <div class="row" id="products_table_div">
 
                 </div>
-                <div class="form-group row " style="width: 68%;">
+
+                <div class="form-group checkbox row" style="padding-bottom: 15px;">
+                    <label>
+                        <input type="checkbox" id="isOnTheSpotDelivery" value="1" onchange="toggle_assign_vehicle()"> <label style="font-weight: 800; padding-left: 0px">Delivery on the Spot</label>
+                    </label>
+                </div>
+
+                <div class="form-group row " style="width: 68%;" id="vehicle_assignment">
                     <label for="vehicle">Assign Delivery Vehicle</label>
                     <select class="form-control select2" name="vehicle" id="vehicles" style="width: 100%;">
                         <option selected>Select Vehicle</option>
@@ -184,6 +191,10 @@
         var rand = Math.floor((Math.random() * 1000000)+1);
         document.getElementById('order_id').value = 'O-'+("000000" + rand).slice(-6);
     }
+    
+    function toggle_assign_vehicle() {
+        $('#vehicle_assignment').toggle();
+    }
 
     $( ".product_details" ).change(function() {
 
@@ -281,18 +292,28 @@
 
     //place order
     function placeOrder(){
-        console.log(products_on_order.length);
-        if(document.getElementById("vehicles").value=='Select Vehicle' || document.getElementById("order_id").value=='' || products_on_order.length==0 || document.getElementById("customer_id").value=='Choose a Customer'){
+
+        var vehicle_id = '';
+        var isDelivered = 0;
+        console.log(document.getElementById("isOnTheSpotDelivery").checked);
+        if((!document.getElementById("isOnTheSpotDelivery").checked && document.getElementById("vehicles").value=='Select Vehicle') || document.getElementById("order_id").value=='' || products_on_order.length==0 || document.getElementById("customer_id").value=='Choose a Customer'){
             if(document.getElementById("order_id").value==''){
                 alertify.error('Generate an Order Code');
             }else if(document.getElementById("customer_id").value=='Choose a Customer'){
                 alertify.error('Select a Customer');
             }else if(products_on_order.length==0){
                 alertify.error('You have no Products Selected for the Order');
-            }else{
+            }else if(!document.getElementById("isOnTheSpotDelivery").checked && document.getElementById("vehicles").value=='Select Vehicle'){
                 alertify.error('Assign a Vehicle for the Order');
             }
         }else{
+            if(document.getElementById("isOnTheSpotDelivery").checked){
+                vehicle_id=0;
+                isDelivered=1;
+            }else{
+                vehicle_id=document.getElementById("vehicles").value;
+            }
+            console.log(isDelivered);
             alertify.confirm('Are You Sure You Want to Place the Order?', function(){
                 $.ajax({
                     url: "{{ url('/placeOrder') }}",
@@ -301,8 +322,9 @@
                         order_date:document.getElementById("order_date").value,
                         order_code:document.getElementById("order_id").value,
                         customer_id:document.getElementById("customer_id").value,
-                        vehicle_id:document.getElementById("vehicles").value,
-                        full_amount:total_amount},
+                        vehicle_id:vehicle_id,
+                        full_amount:total_amount,
+                        isDelivered:isDelivered},
                     dataType: 'json',
                     async:true,
                     success: function(data){

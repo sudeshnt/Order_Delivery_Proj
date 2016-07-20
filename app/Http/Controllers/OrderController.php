@@ -29,6 +29,8 @@ class OrderController extends Controller
         $order_code = $_GET['order_code'];
         $full_amount = $_GET['full_amount'];
         $vehicle_id = $_GET['vehicle_id'];
+        $isDelivered = $_GET['isDelivered'];
+        //dd($isDelivered);
         $customer = Customer::where('customer_id',$_GET['customer_id'])->first();
         // handling products in orders
         foreach ($_GET['products_on_order'] as $product_on_order) {
@@ -57,7 +59,7 @@ class OrderController extends Controller
         $order->paid_amount=0;
         $order->isPaid=false;
         $order->vehicle_id=$vehicle_id;
-        $order->isDelivered=false;
+        $order->isDelivered=$isDelivered;
         $order->save();
 
         //assign vehicle

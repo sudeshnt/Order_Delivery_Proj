@@ -62,11 +62,11 @@
                     @endforeach
                 </div>
                 <div class="tab-pane" id="tab_2">
-                    <div style="margin-bottom: 25px;">
+                    {{--<div style="margin-bottom: 25px;">
                         <label style="margin-right: 20px;"><input id="rdb1" type="radio" name="toggler" value="1" style="margin-right: 8px;"/>Add Existing</label>
                         <label><input id="rdb2" type="radio" name="toggler" value="2" style="margin-right: 8px;"/>Add New</label>
-                    </div>
-                    <div id="blk-1" class="toHide" style="display:none">
+                    </div>--}}
+                    <div id="blk-1">
                         <div class="row" style="width: 60%;">
                             <form role="form" method="post" action="{{ url('/addExistingDamaged') }}">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -86,13 +86,13 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <button class="btn btn-primary" onclick="placeOrder();">Sumbit</button>
+                                            <button class="btn btn-primary">Submit</button>
                                         </div>
 
                               </form>
                         </div>
                      </div>
-                     <div id="blk-2" class="toHide" style="display:none">
+                     {{--<div id="blk-2" class="toHide" style="display:none">
                          <form role="form" method="post" action="{{ url('/addNewDamagedProducts') }}">
                              <input type="hidden" name="_token" value="{{ csrf_token() }}">
                              <div class="form-group">
@@ -124,7 +124,7 @@
                                  <button type="submit" class="btn btn-primary">Submit</button>
                              </div>
                          </form>
-                     </div>
+                     </div>--}}
             </div>
         </div>
     </div>
