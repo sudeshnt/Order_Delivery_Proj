@@ -30,6 +30,7 @@ class OrderController extends Controller
         $full_amount = $_GET['full_amount'];
         $vehicle_id = $_GET['vehicle_id'];
         $isDelivered = $_GET['isDelivered'];
+
         //dd($isDelivered);
         $customer = Customer::where('customer_id',$_GET['customer_id'])->first();
         // handling products in orders
@@ -60,6 +61,13 @@ class OrderController extends Controller
         $order->isPaid=false;
         $order->vehicle_id=$vehicle_id;
         $order->isDelivered=$isDelivered;
+        if($isDelivered==1){
+            $order->deliveryType = 'byHand';
+            $order->delivered_at = $order_date;
+            $order->whoReceived = $customer->customer_name;
+        }else{
+            $order->deliveryType = 'byVehicle';
+        }
         $order->save();
 
         //assign vehicle
@@ -118,6 +126,7 @@ class OrderController extends Controller
                 ->select('orders.*', 'customers.*','vehicles.vehicle_number','drivers.driver_name')
                 ->orderBy('orders.order_date','desc')
                 ->get();
+           // dd($view->allOrders);
             $view->option='';
         }else{
             $dates = explode(",", $option);
@@ -340,6 +349,7 @@ class OrderController extends Controller
                 ->select('orders.*','customers.customer_name','vehicles.*','drivers.*',DB::raw('count(products_on_order.qty) as num_product,SUM(products_on_order.qty) as total_qty'))
                 ->groupBy('orders.order_code')
                 ->where('orders.isDelivered',1)
+                ->where('orders.deliveryType','byVehicle')
                 ->get();
 
             $allOrdersNotDelivered = DB::table('orders')
@@ -350,6 +360,7 @@ class OrderController extends Controller
                 ->select('orders.*','customers.customer_name','vehicles.*','drivers.*',DB::raw('count(products_on_order.qty) as num_product,SUM(products_on_order.qty) as total_qty'))
                 ->groupBy('orders.order_code')
                 ->where('orders.isDelivered',0)
+                ->where('orders.deliveryType','byVehicle')
                 ->get();
         }
         else{
@@ -361,6 +372,7 @@ class OrderController extends Controller
                 ->select('orders.*','customers.customer_name','vehicles.*','drivers.*',DB::raw('count(products_on_order.qty) as num_product,SUM(products_on_order.qty) as total_qty'))
                 ->groupBy('orders.order_code')
                 ->where('orders.isDelivered',1)
+                ->where('orders.deliveryType','byVehicle')
                 ->where('orders.delivered_at','>=',$start_date)
                 ->where('orders.delivered_at','<=',$end_date." 23:59:59")
                 ->get();
@@ -373,6 +385,7 @@ class OrderController extends Controller
                 ->select('orders.*','customers.customer_name','vehicles.*','drivers.*',DB::raw('count(products_on_order.qty) as num_product,SUM(products_on_order.qty) as total_qty'))
                 ->groupBy('orders.order_code')
                 ->where('orders.isDelivered',0)
+                ->where('orders.deliveryType','byVehicle')
                 ->where('orders.delivered_at','>=',$start_date)
                 ->where('orders.delivered_at','<=',$end_date." 23:59:59")
                 ->get();

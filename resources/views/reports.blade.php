@@ -127,9 +127,11 @@
                         @else
                             <td><span class="label label-danger" style="font-size: small">Pending</span></td>
                         @endif
-                        <td>{{$order->vehicle_number}} : {{$order->driver_name}}</td>
-
-
+                        @if($order->deliveryType=='byVehicle')
+                            <td>{{$order->vehicle_number}} : {{$order->driver_name}}</td>
+                        @else
+                            <td>delivered on the spot</td>
+                        @endif
                     </tr>
                 @endforeach
                 </tbody>

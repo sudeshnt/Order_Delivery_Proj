@@ -108,7 +108,11 @@
                                 @else
                                     <td><span class="label label-danger" style="font-size: small">Pending</span></td>
                                 @endif
-                                <td>{{$order->vehicle_number}} : {{$order->driver_name}}</td>
+                                @if($order->deliveryType=='byVehicle')
+                                    <td>{{$order->vehicle_number}} : {{$order->driver_name}}</td>
+                                @else
+                                    <td>delivered on the spot</td>
+                                @endif
                                 <td>
                                     <select class="form-control" name="option" style="width: 100%;" onchange="ActionSelected(this.value,'{{$order->order_code}}');">
                                         <option selected>Select Action</option>

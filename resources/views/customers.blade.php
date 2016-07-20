@@ -192,16 +192,17 @@
 					if(data[order].isDelivered==1)
 					{
 						HTML+='Delivered Date : '+data[order].delivered_at+'<br>';
-						HTML+='Delivered By : '+data[order].vehicle_number+' , '+data[order].driver_name+'<br>'+'Received By : '+data[order].whoReceived+'<br>';
+						if(data[order].deliveryType=='byVehicle')
+							HTML+='Delivered By : '+data[order].vehicle_number+' , '+data[order].driver_name+'<br>'+'Received By : '+data[order].whoReceived+'<br>';
+						else
+							HTML+='Delivered By : delivered on the spot<br>';
 					}
 					else {
-						HTML+='Assigned Vehicle : '+data[order].vehicle_number+' , '+data[order].driver_name+'<br>';
+							HTML+='Assigned Vehicle : '+data[order].vehicle_number+' , '+data[order].driver_name+'<br>';
 					}
 					HTML+='Order Value : ₦ '+data[order].full_amount+'<br>'+'Paid Amount : ₦ '+data[order].paid_amount+'<br>';
 					if(data[order].isPaid==0)
-						HTML+='<p style="color: #FD3131;">Due Payment :(total_owe).toFixed(2) '+(data[order].full_amount-data[order].paid_amount)+'</p>';
-
-
+						HTML+='<p style="color: #FD3131;">Due Payment : ₦ '+(data[order].full_amount-data[order].paid_amount)+'</p>';
 					HTML+='</div>'+
 						'</div>'+
 					'</div>';
